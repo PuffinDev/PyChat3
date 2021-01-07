@@ -81,14 +81,17 @@ msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list com
 #handles close window event
 def close_window():
     send(DISCONNECT_MESSAGE)
+    time.sleep(0.4)
+    running = False
+    top.destroy()
     exit()
 top.protocol("WM_DELETE_WINDOW", close_window)
 
 
-def send(msg):
+def send(msg):  #takes in a string from entry field
     global muted
 
-    if msg[0] == '/':
+    if msg[0] == '/':  #checking if message is command
         is_command = True
         if not muted:
             playsound('resources/command.mp3')
@@ -159,10 +162,12 @@ def send(msg):
     client.send(send_length)
     client.send(message)
 
+running = True
+
 def recive():
     global muted
 
-    while True:
+    while running:
         #recive messages
         recived_msg = pickle.loads(client.recv(2048))
         print(recived_msg)
