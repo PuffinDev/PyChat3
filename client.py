@@ -28,7 +28,7 @@ top.resizable(False, False)
 top.configure(bg=theme[0])
 
 HEADER = 64
-PORT = 5050
+PORT = 8080
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "disconnect"
 time.sleep(0.4)
@@ -94,11 +94,11 @@ def send(msg):  #takes in a string from entry field
     if msg[0] == '/':  #checking if message is command
         is_command = True
         if not muted:
-            playsound('resources/command.mp3')
+            playsound('resources/client/command.mp3')
     else:
         is_command = False
         if not muted:
-            playsound('resources/send.mp3')
+            playsound('resources/client/send.mp3')
 
     
 
@@ -178,9 +178,9 @@ def recive():
             if not recived_msg[2] == username:  #Play message recive sound if the message isnt from the user
                 if not muted:
                     if '@' + username in recived_msg:
-                        playsound('resources/mention.mp3')
+                        playsound('resources/client/mention.mp3')
                     else:
-                        playsound('resources/recive.mp3')
+                        playsound('resources/client/recive.mp3')
             
             msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
             msg_list.yview(tkinter.END)
