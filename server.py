@@ -3,7 +3,7 @@ import threading
 import pickle
 
 HEADER = 64
-PORT = 5050
+PORT = 8080
 SERVER = "0.0.0.0"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
