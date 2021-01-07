@@ -5,8 +5,9 @@ from tkinter import simpledialog
 import threading
 from playsound import playsound
 import time
+import json
 
-
+#Theme presets
 themes = {
 'beach': ['light sea green', 'pale goldenrod'],
 'ocean': ['aquamarine', 'turquoise'],
@@ -18,8 +19,29 @@ themes = {
 'sweden': ['blue2', 'yellow'],
 'coal': ['grey12', 'grey29']
 }
-theme = themes['beach']
-muted = False
+
+
+#Load config.json
+
+with open("resources/client/config.json", 'r') as file:
+
+    data = json.load(file)
+
+    theme = themes[data["theme"]]
+    theme_name = data["theme"]
+    muted = data["muted"]
+
+def save_config():
+    global theme_name
+    global muted
+
+    with open("resources/client/config.json", 'w') as file:
+
+        data["theme"] = theme_name
+        data["muted"] = muted
+
+        file = json.dump(data, file)
+
 
 top = tkinter.Tk()
 top.title('PyChat')
@@ -80,8 +102,9 @@ msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list com
 
 #handles close window event
 def close_window():
+    save_config() #Save theme, muted, etc.
     send(DISCONNECT_MESSAGE)
-    time.sleep(0.4)
+    time.sleep(0.7)
     running = False
     top.destroy()
     exit()
@@ -90,6 +113,7 @@ top.protocol("WM_DELETE_WINDOW", close_window)
 
 def send(msg):  #takes in a string from entry field
     global muted
+    global theme_name
 
     if msg[0] == '/':  #checking if message is command
         is_command = True
@@ -113,6 +137,7 @@ def send(msg):  #takes in a string from entry field
     elif msg[1:7] == 'theme ':
         try:
             theme = themes[msg[7:len(msg)]]
+            theme_name = msg[7:len(msg)]
             top.configure(bg=theme[0])
             msg_list.config(bg=theme[1])
             msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)])
@@ -131,7 +156,7 @@ def send(msg):  #takes in a string from entry field
         muted = True
         msg_list.insert(tkinter.END, "[SYSTEM] Muted notifications")
         msg_list.yview(tkinter.END)
-    elif msg[1:7] == 'mute':
+    elif msg[1:7] == 'unmute':
         muted = False
         msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications")
         msg_list.yview(tkinter.END)
