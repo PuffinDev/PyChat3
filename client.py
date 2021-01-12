@@ -161,6 +161,9 @@ def send(msg):  #takes in a string from entry field
         msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications")
         msg_list.yview(tkinter.END)
 
+    elif msg[1:4] == 'ban':
+        member = msg[5:len(msg)]
+        msg = ('b', member)
 
     elif msg[1:5] == 'help':
         msg_list.insert(tkinter.END, "• /username [your_username]  - Set a username")
@@ -199,16 +202,26 @@ def recive():
 
         prefix = recived_msg[0]
 
-        if not prefix in ['u']:
-            if not recived_msg[2] == username:  #Play message recive sound if the message isnt from the user
-                if not muted:
-                    if '@' + username in recived_msg:
-                        playsound('resources/client/mention.mp3')
-                    else:
-                        playsound('resources/client/recive.mp3')
-            
-            msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
+        try:
+            if not prefix in ['u', 'b']:
+                if not recived_msg[2] == username:  #Play message recive sound if the message isnt from the user
+                    if not muted:
+                        if '@' + username in recived_msg:
+                            playsound('resources/client/mention.mp3')
+                        else:
+                            playsound('resources/client/recive.mp3')
+                
+                msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
+                msg_list.yview(tkinter.END)
+        except IndexError:
+            pass
+
+        if prefix == 'x':
+            msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
             msg_list.yview(tkinter.END)
+
+            
+            
 
 
 send('/username ' + username) #Set username
