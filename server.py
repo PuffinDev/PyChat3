@@ -63,10 +63,12 @@ def handle_client(conn, addr):
                 conn_usernames[msg[1]] = conn
 
             if prefix == 'b':
-                if addr in admins:
+                if addr[0] in admins:
                     send(msg[1], ('r', 'Member banned successfully!'))
                 else:
                     send(msg[1], ('r', 'You are not an admin!'))
+                    print(admins)
+                    print(addr)
 
             print(f"[{str(addr).strip('(').strip(')')}] {msg}")
             
