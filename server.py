@@ -17,6 +17,12 @@ server.bind(ADDR)
 connections = []
 usernames = {}
 
+admins = []
+
+with open("resources/server/admins.txt", 'r') as file:
+    for line in file:
+        line = line.strip()
+        admins.append(line)
 
 def send_to_all(msg, user):
     msg = ('m', msg, user)
@@ -50,6 +56,13 @@ def handle_client(conn, addr):
                 connected = False
             if prefix == 'u':
                 usernames[addr] = msg[1]
+
+            if prefix == 'b':
+                if addr in admins:
+                    send(('r', 'Member banned successfully!'))
+                else:
+                    send(('r', 'You are not an admin!'))
+                user = msg[1]
 
             print(f"[{str(addr).strip('(').strip(')')}] {msg}")
             

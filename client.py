@@ -219,6 +219,11 @@ def recive():
         if prefix == 'x':
             msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
             msg_list.yview(tkinter.END)
+            running = False
+
+        if prefix == 'r':
+            msg_list.insert(tkinter.END, "[SYSTEM] " + msg[1])
+            msg_list.yview(tkinter.END)
 
             
             
