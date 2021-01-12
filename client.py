@@ -130,8 +130,6 @@ def send(msg):  #takes in a string from entry field
 
     if msg[1:9] == 'username':
         username = msg[10:len(msg)]
-        msg_list.insert(tkinter.END, "[SYSTEM] Username has been set to " + msg[10:len(msg)])
-        msg_list.yview(tkinter.END)
         msg = ('u', msg[10:len(msg)]) #example: ('u', 'A_Person')
 
     elif msg[1:7] == 'theme ':

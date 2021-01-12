@@ -41,6 +41,7 @@ with open("resources/server/admins.txt", 'r') as file:
 def write_config():
     with open("resources/server/banned.txt", 'w') as file:
         file.truncate(0)
+        print(banned)
         for member in banned:
             file.write(member + "\n")
 
@@ -82,8 +83,15 @@ def handle_client(conn, addr):
             if msg[1] == DISCONNECT_MESSAGE:
                 connected = False
             if prefix == 'u':
-                usernames[addr] = msg[1]
-                conn_usernames[msg[1]] = conn
+                if msg[1] in usernames.values():
+                    send(usernames[addr], ('r', "That username is taken. please choose another."))
+                    print("username taken")
+                else:
+                    usernames[addr] = msg[1]
+                    print(usernames)
+                    conn_usernames[msg[1]] = conn
+                    send(usernames[addr], ('r', "Username has been set to " + msg[1]))
+                    print("username set to " + msg[1])
 
             if prefix == 'b':
                 if addr[0] in admins:
@@ -102,7 +110,8 @@ def handle_client(conn, addr):
                 try:
                     send_to_all(msg[1], usernames[addr])
                 except KeyError:
-                    send_to_all(msg[1], "Anon")
+                    usernames[addr] = threading.activeCount() - 1
+                    send_to_all(msg[1], usernames[addr])
 
     conn.close()
     connections.remove(conn) #Remove from connections list
