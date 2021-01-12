@@ -174,8 +174,8 @@ def send(msg):  #takes in a string from entry field
         member = whole[0:from_char-1]
         message = whole[from_char:len(whole)]
 
-        print("Member: " + member)
-        print("Message: " + message)
+        msg_list.insert(tkinter.END, "[DM]" + username + " -> " + member + ": " + message)
+        msg_list.yview(tkinter.END)
         msg = ('d', member, message)
 
     elif msg[1:5] == 'help':
@@ -237,7 +237,7 @@ def recive():
             if prefix in ['m']:
                 msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
                 msg_list.yview(tkinter.END)
-                
+
                 if not recived_msg[2] == username:  #Play message recive sound if the message isnt from the user
                     if not muted:
                         if '@' + username in recived_msg:
