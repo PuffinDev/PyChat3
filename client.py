@@ -222,6 +222,8 @@ def recive():
             msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
             msg_list.yview(tkinter.END)
             running = False
+            time.sleep(2)
+            exit()
 
         if prefix == 'r':
             msg_list.insert(tkinter.END, "[SYSTEM] " + recived_msg[1])
