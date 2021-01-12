@@ -11,6 +11,7 @@ Pychat2 is a python chat application created with socket.
 - change themes
 - Get notifications
 - Mention members
+- ban members
 
 ## Screenshots
 UI
@@ -41,6 +42,4 @@ Themes
 
 ## Coming soon!
 
-- Ban and kick members
-- Admin permissions
 - Send files

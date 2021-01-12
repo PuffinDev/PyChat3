@@ -170,6 +170,7 @@ def send(msg):  #takes in a string from entry field
         msg_list.insert(tkinter.END, "• /themes  - List theme names")
         msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds")
         msg_list.insert(tkinter.END, "• /unmute  - Unute notification sounds")
+        msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server")
         msg_list.yview(tkinter.END)
         return 0
         
