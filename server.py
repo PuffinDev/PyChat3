@@ -16,6 +16,7 @@ server.bind(ADDR)
 
 connections = []
 usernames = {}
+conn_usernames = {}
 
 admins = []
 
@@ -29,6 +30,9 @@ def send_to_all(msg, user):
     for conn in connections:
         conn.send(pickle.dumps(msg))
 
+def send(user, msg):
+    conn = conn_usernames[user] # Get connection object from conn_usernames
+    conn.send(pickle.dumps(msg))
 
 
 def handle_client(conn, addr):
@@ -56,13 +60,13 @@ def handle_client(conn, addr):
                 connected = False
             if prefix == 'u':
                 usernames[addr] = msg[1]
+                conn_usernames[msg[1]] = conn
 
             if prefix == 'b':
                 if addr in admins:
-                    send(('r', 'Member banned successfully!'))
+                    send(msg[1], ('r', 'Member banned successfully!'))
                 else:
-                    send(('r', 'You are not an admin!'))
-                user = msg[1]
+                    send(msg[1], ('r', 'You are not an admin!'))
 
             print(f"[{str(addr).strip('(').strip(')')}] {msg}")
             

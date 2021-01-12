@@ -190,10 +190,10 @@ def send(msg):  #takes in a string from entry field
     client.send(send_length)
     client.send(message)
 
-running = True
 
 def recive():
     global muted
+    running = True
 
     while running:
         #recive messages
@@ -222,11 +222,8 @@ def recive():
             running = False
 
         if prefix == 'r':
-            msg_list.insert(tkinter.END, "[SYSTEM] " + msg[1])
+            msg_list.insert(tkinter.END, "[SYSTEM] " + recived_msg[1])
             msg_list.yview(tkinter.END)
-
-            
-            
 
 
 send('/username ' + username) #Set username
