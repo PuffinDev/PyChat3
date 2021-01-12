@@ -19,11 +19,30 @@ usernames = {}
 conn_usernames = {}
 
 admins = []
+banned = []
+
+
+def addr_from_username(user):
+    for key, value in usernames.items():
+        if value == user:
+            return key[0]
+
+
+with open("resources/server/banned.txt", 'r') as file:
+    for line in file:
+        line = line.strip()
+        banned.append(line)
 
 with open("resources/server/admins.txt", 'r') as file:
     for line in file:
         line = line.strip()
         admins.append(line)
+
+def write_config():
+    with open("resources/server/banned.txt", 'w') as file:
+        file.truncate(0)
+        for member in banned:
+            file.write(member + "\n")
 
 def send_to_all(msg, user):
     msg = ('m', msg, user)
@@ -36,7 +55,11 @@ def send(user, msg):
 
 
 def handle_client(conn, addr):
-    print(f"[NEW CONNECTION] {addr} connected.")
+    if addr[0] in banned:
+        conn.send(pickle.dumps(('x')))
+        return 0
+    else:
+        print(f"[NEW CONNECTION] {addr} connected.")
 
     connected = True
     while connected:
@@ -64,6 +87,9 @@ def handle_client(conn, addr):
 
             if prefix == 'b':
                 if addr[0] in admins:
+                    banned.append(addr_from_username(msg[1]))
+                    write_config()
+                    send(msg[1], ('x')) #x command: disconnects client
                     send(msg[1], ('r', 'Member banned successfully!'))
                 else:
                     send(msg[1], ('r', 'You are not an admin!'))
@@ -95,3 +121,4 @@ def start():
 
 print("[STARTING] server is starting...")
 start()
+
