@@ -104,6 +104,14 @@ def handle_client(conn, addr):
                     print(admins)
                     print(addr)
 
+            if prefix == 'd':
+                try:
+                    send(msg[1], ('d', msg[2], msg[1]))
+                except:
+                    conn.send(pickle.dumps(('r', "User does not exist.")))
+
+                
+
             print(f"[{str(addr).strip('(').strip(')')}] {msg}")
             
             if is_command == False:

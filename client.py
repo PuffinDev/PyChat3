@@ -163,9 +163,25 @@ def send(msg):  #takes in a string from entry field
         member = msg[5:len(msg)]
         msg = ('b', member)
 
+    elif msg[1:3] == 'dm':
+        whole = msg[4:len(msg)]
+        i=0
+        for char in whole:
+            i+=1
+            if char == " ":
+                from_char = i
+
+        member = whole[0:from_char-1]
+        message = whole[from_char:len(whole)]
+
+        print("Member: " + member)
+        print("Message: " + message)
+        msg = ('d', member, message)
+
     elif msg[1:5] == 'help':
         msg_list.insert(tkinter.END, "• /username [your_username]  - Set a username")
         msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server")
+        msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user")
         msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme")
         msg_list.insert(tkinter.END, "• /themes  - List theme names")
         msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds")
@@ -201,8 +217,22 @@ def recive():
 
         prefix = recived_msg[0]
 
+        
+        if prefix == 'x':
+            msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
+            msg_list.yview(tkinter.END)
+            running = False
+
+        if prefix == 'r':
+            msg_list.insert(tkinter.END, "[SYSTEM] " + recived_msg[1])
+            msg_list.yview(tkinter.END)
+
+        if prefix == 'd':
+            msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1])
+            msg_list.yview(tkinter.END)
+        
         try:
-            if not prefix in ['u', 'b']:
+            if not prefix in ['u', 'b', 'x', 'r', 'd']:
                 if not recived_msg[2] == username:  #Play message recive sound if the message isnt from the user
                     if not muted:
                         if '@' + username in recived_msg:
@@ -214,15 +244,6 @@ def recive():
                 msg_list.yview(tkinter.END)
         except IndexError:
             pass
-
-        if prefix == 'x':
-            msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
-            msg_list.yview(tkinter.END)
-            running = False
-
-        if prefix == 'r':
-            msg_list.insert(tkinter.END, "[SYSTEM] " + recived_msg[1])
-            msg_list.yview(tkinter.END)
 
 
 send('/username ' + username) #Set username
