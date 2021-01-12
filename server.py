@@ -95,14 +95,29 @@ def handle_client(conn, addr):
 
             if prefix == 'b':
                 if addr[0] in admins:
-                    banned.append(addr_from_username(msg[1]))
-                    write_config()
-                    send(msg[1], ('x')) #x command: disconnects client
-                    send(usernames[addr], ('r', 'Member banned successfully!'))
+                    try:
+                        banned.append(addr_from_username(msg[1]))
+                        write_config()
+                        send(msg[1], ('x')) #x command: disconnects client
+                        send(usernames[addr], ('r', 'User banned successfully!'))
+                    except:
+                        send(usernames[addr], ('r', 'User does not exist'))
+
                 else:
                     send(msg[1], ('r', 'You are not an admin!'))
-                    print(admins)
-                    print(addr)
+
+            if prefix == 'a':
+                if addr[0] in admins:
+                    try:
+                        banned.remove(addr_from_username(msg[1]))
+                        write_config()
+                        send(usernames[addr], ('r', 'User unbanned successfully!'))
+                    except:
+                        send(usernames[addr], ('r', 'User is not banned!'))
+                        send(usernames[addr], ('r', addr_from_username(msg[1])))
+                    
+                else:
+                    send(msg[1], ('r', 'You are not an admin!'))
 
             if prefix == 'd':
                 try:

@@ -162,6 +162,9 @@ def send(msg):  #takes in a string from entry field
     elif msg[1:4] == 'ban':
         member = msg[5:len(msg)]
         msg = ('b', member)
+    elif msg[1:6] == 'unban':
+        member = msg[7:len(msg)]
+        msg = ('a', member)
 
     elif msg[1:3] == 'dm':
         whole = msg[4:len(msg)]
@@ -226,7 +229,7 @@ def recive():
             top.destroy()
 
         if prefix == 'r':
-            msg_list.insert(tkinter.END, "[SYSTEM] " + recived_msg[1])
+            msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]))
             msg_list.yview(tkinter.END)
 
         if prefix == 'd':
