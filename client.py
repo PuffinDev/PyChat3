@@ -223,7 +223,7 @@ def recive():
             msg_list.yview(tkinter.END)
             running = False
             time.sleep(2)
-            exit()
+            top.destroy()
 
         if prefix == 'r':
             msg_list.insert(tkinter.END, "[SYSTEM] " + recived_msg[1])

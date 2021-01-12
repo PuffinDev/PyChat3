@@ -98,7 +98,7 @@ def handle_client(conn, addr):
                     banned.append(addr_from_username(msg[1]))
                     write_config()
                     send(msg[1], ('x')) #x command: disconnects client
-                    send(msg[1], ('r', 'Member banned successfully!'))
+                    send(usernames[addr], ('r', 'Member banned successfully!'))
                 else:
                     send(msg[1], ('r', 'You are not an admin!'))
                     print(admins)
@@ -106,7 +106,7 @@ def handle_client(conn, addr):
 
             if prefix == 'd':
                 try:
-                    send(msg[1], ('d', msg[2], msg[1]))
+                    send(msg[1], ('d', msg[2], usernames[addr]))
                 except:
                     conn.send(pickle.dumps(('r', "User does not exist.")))
 
