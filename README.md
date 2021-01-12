@@ -43,3 +43,9 @@ Themes
 ## Coming soon!
 
 - Send files
+
+## Usage
+
+pip install -r requirements.txt
+python3 server.py
+python3 client.py
