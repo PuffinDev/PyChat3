@@ -61,6 +61,9 @@ def send(user, msg):
 
 
 def handle_client(conn, addr):
+    usernames[addr] = threading.activeCount() - 1 #Temp username
+    conn_usernames[usernames[addr]] = conn
+
     if addr[0] in banned:
         conn.send(pickle.dumps(('x')))
         return 0

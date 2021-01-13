@@ -124,6 +124,8 @@ top.protocol("WM_DELETE_WINDOW", close_window)
 
 
 def send(msg):  #takes in a string from entry field
+    global username
+    
     global muted
     global theme_name
 
