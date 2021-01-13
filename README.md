@@ -32,6 +32,10 @@ Help command
 
 ![](screenshots/9.png)
 
+Online users pannel
+
+![](screenshots/14.png)
+
 Themes
 
 ![](screenshots/11.png)
@@ -52,5 +56,5 @@ python3 client.py
 
 ## Known bugs
 
-DMs do not send if more than one word
-Pressing enter doesn't send messages
+Reconnecting with the same username as previous doesn't work
+If you set an invalid username, there is no system message to warn the user
