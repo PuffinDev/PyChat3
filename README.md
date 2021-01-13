@@ -49,3 +49,8 @@ Themes
 pip install -r requirements.txt
 python3 server.py
 python3 client.py
+
+## Known bugs
+
+DMs do not send if more than one word
+Pressing enter doesn't send messages
