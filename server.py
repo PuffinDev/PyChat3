@@ -1,6 +1,7 @@
 import socket 
 import threading
 import pickle
+import time
 
 HEADER = 64
 PORT = 8080
@@ -17,10 +18,10 @@ server.bind(ADDR)
 connections = []
 usernames = {}
 conn_usernames = {}
+online_users = []
 
 admins = []
 banned = []
-
 
 def addr_from_username(user):
     for key, value in usernames.items():
@@ -50,6 +51,10 @@ def send_to_all(msg, user):
     for conn in connections:
         conn.send(pickle.dumps(msg))
 
+def send_object_to_all(object):
+    for conn in connections:
+        conn.send(pickle.dumps(object))
+
 def send(user, msg):
     conn = conn_usernames[user] # Get connection object from conn_usernames
     conn.send(pickle.dumps(msg))
@@ -61,13 +66,24 @@ def handle_client(conn, addr):
         return 0
     else:
         print(f"[NEW CONNECTION] {addr} connected.")
-
+    
     connected = True
+    username_set = False
+    join_message_sent = False
+
+    conn.send(pickle.dumps(('o', online_users)))
+
     while connected:
         try:
             msg_length = conn.recv(HEADER).decode(FORMAT)
         except:
             connected = False #Disconnect if failed to recive header
+
+        if username_set == True and join_message_sent == False:
+            send_object_to_all(('j', usernames[addr]))
+            online_users.append(usernames[addr])
+            join_message_sent = True
+
         
         if msg_length:
             msg_length = int(msg_length)
@@ -91,6 +107,7 @@ def handle_client(conn, addr):
                     print(usernames)
                     conn_usernames[msg[1]] = conn
                     send(usernames[addr], ('r', "Username has been set to " + msg[1]))
+                    username_set = True
                     print("username set to " + msg[1])
 
             if prefix == 'b':
@@ -136,6 +153,9 @@ def handle_client(conn, addr):
                     usernames[addr] = threading.activeCount() - 1
                     send_to_all(msg[1], usernames[addr])
 
+    send_object_to_all(('l', usernames[addr]))
+    time.sleep(0.5)
+    online_users.remove(usernames[addr])
     conn.close()
     connections.remove(conn) #Remove from connections list
 

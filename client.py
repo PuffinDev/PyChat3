@@ -6,6 +6,7 @@ import threading
 from playsound import playsound
 import time
 import json
+import random
 
 #Theme presets
 themes = {
@@ -45,7 +46,6 @@ def save_config():
 
 top = tkinter.Tk()
 top.title('PyChat')
-top.geometry('400x360')
 top.resizable(False, False)
 top.configure(bg=theme[0])
 
@@ -62,6 +62,8 @@ ADDR = (SERVER, PORT)
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
 emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
+join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
+leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
 
 #Init socket
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -75,6 +77,16 @@ msg_list.config(bg=theme[1])
 msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
 msg_list.pack()
 messages_frame.pack()
+
+users_frame = tkinter.Frame(top)
+user_list = tkinter.Listbox(messages_frame, height=15, width=15)
+user_list.config(bg=theme[1])
+user_list.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
+user_list.pack()
+users_frame.pack()
+
+user_list.insert(tkinter.END, "ONLINE USERS:")
+
 
 entrymsg = tkinter.StringVar()
 entry_field = tkinter.Entry(top, textvariable=entrymsg)
@@ -232,9 +244,24 @@ def recive():
             msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]))
             msg_list.yview(tkinter.END)
 
-        if prefix == 'd':
+        if prefix == 'd': #A DM was recived
             msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1])
             msg_list.yview(tkinter.END)
+        
+        if prefix == 'j':  #Someone joined
+            msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)])
+            msg_list.yview(tkinter.END)
+            user_list.insert(tkinter.END, recived_msg[1])
+
+        if prefix == 'l':  #Someone joined
+            msg_list.insert(tkinter.END, "< " + recived_msg[1] + " " + leave_messages[random.randint(0, len(leave_messages) - 1)])
+            msg_list.yview(tkinter.END)
+            idx = user_list.get(0, tkinter.END).index(recived_msg[1])
+            user_list.delete(idx)
+
+        if prefix == 'o':  #List of online members
+            for user in recived_msg[1]:
+                user_list.insert(tkinter.END, user)
         
         try:
             if prefix in ['m']:
