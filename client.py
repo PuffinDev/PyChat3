@@ -264,7 +264,7 @@ def recive():
                 user_list.insert(tkinter.END, user)
         
         try:
-            if prefix in ['m'] and not msg[2] == "disconnect":
+            if prefix in ['m'] and not recived_msg[2] == "disconnect":
                 msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
                 msg_list.yview(tkinter.END)
 
