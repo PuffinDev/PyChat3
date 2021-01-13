@@ -191,16 +191,26 @@ def send(msg):  #takes in a string from entry field3.
 
     elif msg[1:3] == 'dm':
         whole = msg[4:len(msg)]
+        print(whole)
         i=0
         for char in whole:
+            print(char)
             i+=1
             if char == " ":
+                print("Blank!!!")
                 from_char = i
+                break
 
         member = whole[0:from_char-1]
+
+        if member == username:
+            msg_list.insert(tkinter.END, "[SYSTEM] You can't DM yourself!!")
+            return 0
+
+        print("Member: " + member)
         message = whole[from_char:len(whole)]
 
-        msg_list.insert(tkinter.END, "[DM]" + username + " -> " + member + ": " + message)
+        msg_list.insert(tkinter.END, "[DM] " + username + ": " + message)
         msg_list.yview(tkinter.END)
         msg = ('d', member, message)
 
