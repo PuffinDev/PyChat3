@@ -193,7 +193,6 @@ def send(msg):  #takes in a string from entry field3.
         msg = ('d', member, message)
 
     elif msg[1:5] == 'help':
-        msg_list.insert(tkinter.END, "• /username [your_username]  - Set a username")
         msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server")
         msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user")
         msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme")
