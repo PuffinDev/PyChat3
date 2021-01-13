@@ -123,9 +123,10 @@ def close_window():
 top.protocol("WM_DELETE_WINDOW", close_window)
 
 
-def send(msg):  #takes in a string from entry field
-    global username
+def send(msg):  #takes in a string from entry field3.
     
+    global username
+
     global muted
     global theme_name
 
@@ -141,10 +142,6 @@ def send(msg):  #takes in a string from entry field
     
 
     entry_field.delete(0, 'end')
-
-    if msg[1:9] == 'username':
-        username = msg[10:len(msg)]
-        msg = ('u', msg[10:len(msg)]) #example: ('u', 'A_Person')
 
     elif msg[1:7] == 'theme ':
         try:
