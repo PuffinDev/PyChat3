@@ -61,13 +61,23 @@ ADDR = (SERVER, PORT)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
-emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
+#try:
+#    emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
+#except:
+emojis = ["Not supported!"]
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
 leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
 
 #Init socket
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+
+try:
+    client.connect(ADDR)
+except ConnectionRefusedError:
+    tkinter.messagebox.showinfo("Error", "Server is not running.")
+    exit()
+except socket.gaierror:
+    tkinter.messagebox.showinfo("Error", "Host does not exist or is not online.")
 
 #Init UI
 
@@ -143,7 +153,7 @@ def send(msg):  #takes in a string from entry field3.
 
     entry_field.delete(0, 'end')
 
-    elif msg[1:7] == 'theme ':
+    if msg[1:7] == 'theme ':
         try:
             theme = themes[msg[7:len(msg)]]
             theme_name = msg[7:len(msg)]
