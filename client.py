@@ -103,10 +103,11 @@ entrymsg = tkinter.StringVar()
 entry_field = tkinter.Entry(top, textvariable=entrymsg)
 
 
-#def send_current_text(key): print(key) #send(entry_field.get()) and 
-#entry_field.bind('<Enter>', send_current_text)
+def send_current_text(key): send(entry_field.get()) #Its working now but I need to pass in params
+entry_field.bind('<Return>', send_current_text)
+
 entry_field.pack()
-send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get()))
+send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get())) 
 send_button.pack()
 
 variable = tkinter.StringVar(top)

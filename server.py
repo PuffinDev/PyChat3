@@ -159,8 +159,11 @@ def handle_client(conn, addr):
     send_object_to_all(('l', usernames[addr]))
     time.sleep(0.5)
     online_users.remove(usernames[addr])
-    conn.close()
     connections.remove(conn) #Remove from connections list
+    conn_usernames.remove(usernames[addr])
+    usernames.remove(addr)
+    conn.close()
+    print("Closed connection.")
 
 
 def start():
