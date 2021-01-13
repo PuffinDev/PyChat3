@@ -61,10 +61,11 @@ ADDR = (SERVER, PORT)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
-#try:
-#    emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
-#except:
-emojis = ["Not supported!"]
+try:
+    emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
+except:
+    emojis = [" Not supported"]
+
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
 leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
 
@@ -152,6 +153,7 @@ def send(msg):  #takes in a string from entry field3.
     
 
     entry_field.delete(0, 'end')
+
 
     if msg[1:7] == 'theme ':
         try:
@@ -286,7 +288,14 @@ def recive():
             pass
 
 
-send('/username ' + username) #Set username
+msg = ('u', username) #Send username
+
+message = pickle.dumps(msg)
+msg_length = len(message)
+send_length = str(msg_length).encode(FORMAT)
+send_length += b' ' * (HEADER - len(send_length))
+client.send(send_length)
+client.send(message)
 
 rcv_thread = threading.Thread(target=recive)
 rcv_thread.start()
