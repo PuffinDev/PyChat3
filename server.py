@@ -160,8 +160,8 @@ def handle_client(conn, addr):
     time.sleep(0.5)
     online_users.remove(usernames[addr])
     connections.remove(conn) #Remove from connections list
-    conn_usernames.remove(usernames[addr])
-    usernames.remove(addr)
+    del conn_usernames[usernames[addr]]
+    del usernames[addr]
     conn.close()
     print("Closed connection.")
 

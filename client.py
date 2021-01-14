@@ -289,7 +289,7 @@ def recive():
                 msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
                 msg_list.yview(tkinter.END)
 
-                if not recived_msg[2] == username:  #Play message recive sound if the message isnt from the user
+                if not recived_msg[2] == username:  #Play message recive sound if the message isn't from the user
                     if not muted:
                         if '@' + username in recived_msg:
                             playsound('resources/client/mention.mp3')
