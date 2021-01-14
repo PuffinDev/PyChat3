@@ -76,16 +76,28 @@ def handle_client(conn, addr):
 
     conn.send(pickle.dumps(('o', online_users)))
 
+
     while connected:
+
+        if username_set and not join_message_sent:
+            send_object_to_all(('j', usernames[addr]))
+            online_users.append(usernames[addr])
+            print(online_users)
+            join_message_sent = True
+
+
         try:
             msg_length = conn.recv(HEADER).decode(FORMAT)
         except:
             connected = False #Disconnect if failed to recive header
-
-        if username_set == True and join_message_sent == False:
-            send_object_to_all(('j', usernames[addr]))
-            online_users.append(usernames[addr])
-            join_message_sent = True
+            send_object_to_all(('l', usernames[addr]))
+            time.sleep(0.5)
+            online_users.remove(usernames[addr])
+            connections.remove(conn) #Remove from connections list
+            del conn_usernames[usernames[addr]]
+            del usernames[addr]
+            conn.close()
+            print("Closed connection.")
 
         
         if msg_length:
