@@ -80,6 +80,7 @@ def handle_client(conn, addr):
     while connected:
 
         if username_set and not join_message_sent:
+            time.sleep(0.5)
             send_object_to_all(('j', usernames[addr]))
             online_users.append(usernames[addr])
             print(online_users)
