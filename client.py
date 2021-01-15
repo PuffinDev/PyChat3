@@ -162,6 +162,7 @@ def send(msg):  #takes in a string from entry field3.
             theme_name = msg[7:len(msg)]
             top.configure(bg=theme[0])
             msg_list.config(bg=theme[1])
+            user_list.config(bg=theme[1])
             msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)])
             msg_list.yview(tkinter.END)
         except KeyError:
