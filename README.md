@@ -51,7 +51,9 @@ Themes
 ## Usage
 
 pip install -r requirements.txt
+
 python3 server.py
+
 python3 client.py
 
 ## Known bugs
