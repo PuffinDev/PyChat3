@@ -269,6 +269,8 @@ def recive():
         if prefix == 'd': #A DM was recived
             msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1])
             msg_list.yview(tkinter.END)
+            if not muted:
+                playsound("resources/client/mention.mp3")
         
         if prefix == 'j':  #Someone joined
             msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)])
