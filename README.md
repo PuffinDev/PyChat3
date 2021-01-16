@@ -7,6 +7,7 @@ Pychat2 is a python chat application created with socket.
 - Send long messages
 - Emoji support
 - easy to navigate GUI
+- Online users pannel
 - many commands
 - change themes
 - Get notifications
@@ -46,7 +47,13 @@ Themes
 
 ## Coming soon!
 
-- Send files
+- Various ug fixes
+- Better UI
+- User info + status
+- Chat history loading
+- Accounts
+- Extra admin commands
+- Server passwords
 
 ## Usage
 
@@ -58,5 +65,4 @@ python3 client.py
 
 ## Known bugs
 
-Reconnecting with the same username as previous doesn't work
 If you set an invalid username, there is no system message to warn the user
