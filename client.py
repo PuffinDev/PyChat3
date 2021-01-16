@@ -50,13 +50,13 @@ top.resizable(False, False)
 top.configure(bg=theme[0])
 
 HEADER = 64
-PORT = 8080
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "disconnect"
 time.sleep(0.4)
 SERVER = simpledialog.askstring("Server chooser", "Type the hostname or ip of a server: ")
 if SERVER == "local" or SERVER == 'l':
     SERVER = socket.gethostname()
+PORT = int(simpledialog.askstring("Port", "Type the port: "))
 ADDR = (SERVER, PORT)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
