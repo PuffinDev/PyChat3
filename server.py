@@ -116,6 +116,7 @@ def handle_client(conn, addr):
                 connected = False
             if prefix == 'u':
                 if msg[1] in usernames.values():
+                    time.sleep(0.5)
                     send(usernames[addr], ('r', "That username is taken. please choose another."))
                     print("username taken")
                 else:
