@@ -10,15 +10,15 @@ import random
 
 #Theme presets
 themes = {
-'beach': ['light sea green', 'pale goldenrod'],
-'ocean': ['aquamarine', 'turquoise'],
-'spring': ['spring green', 'lime green'],
-'night': ['gray16', 'slate grey'],
-'sunset': ['dark orange', 'indian red'],
-'alpine': ['snow', 'lavender'],
-'rose': ['peach puff', 'pink'],
-'sweden': ['blue2', 'yellow'],
-'coal': ['grey12', 'grey29']
+    'beach': ['light sea green', 'pale goldenrod'],
+    'ocean': ['aquamarine', 'turquoise'],
+    'spring': ['spring green', 'lime green'],
+    'night': ['gray16', 'slate grey'],
+    'sunset': ['dark orange', 'indian red'],
+    'alpine': ['snow', 'lavender'],
+    'rose': ['peach puff', 'pink'],
+    'sweden': ['blue2', 'yellow'],
+    'coal': ['grey12', 'grey29']
 }
 
 
@@ -301,6 +301,18 @@ def recive():
         except IndexError:
             pass
 
+def clock():
+    while True:
+        time.sleep(4)
+        msg = ('k', '') #Send keepalive
+        message = pickle.dumps(msg)
+        msg_length = len(message)
+        send_length = str(msg_length).encode(FORMAT)
+        send_length += b' ' * (HEADER - len(send_length))
+        client.send(send_length)
+        client.send(message)
+
+
 
 msg = ('u', username) #Send username
 
@@ -313,5 +325,7 @@ client.send(message)
 
 rcv_thread = threading.Thread(target=recive)
 rcv_thread.start()
+clock_thread = threading.Thread(target=clock)
+clock_thread.start()
 
 tkinter.mainloop()

@@ -2,6 +2,7 @@ import socket
 import threading
 import pickle
 import time
+import traceback
 
 HEADER = 64
 PORT = 8080
@@ -61,6 +62,8 @@ def send(user, msg):
 
 
 def handle_client(conn, addr):
+    server.settimeout(6)
+
     usernames[addr] = str(threading.activeCount() - 1) #Temp username
     conn_usernames[usernames[addr]] = conn
 
@@ -89,21 +92,19 @@ def handle_client(conn, addr):
 
         try:
             msg_length = conn.recv(HEADER).decode(FORMAT)
-        except:
+        except: #timeout
             connected = False #Disconnect if failed to recive header
-            send_object_to_all(('l', usernames[addr]))
-            time.sleep(0.5)
-            online_users.remove(usernames[addr])
-            connections.remove(conn) #Remove from connections list
-            del conn_usernames[usernames[addr]]
-            del usernames[addr]
-            conn.close()
-            print("Closed connection.")
 
+        print(msg_length)
         
         if msg_length:
             msg_length = int(msg_length)
-            msg = conn.recv(msg_length)
+            
+            try:
+                msg = conn.recv(msg_length)
+            except:
+                connected = False #Disconnect if failed to recive header
+
             msg = pickle.loads(msg)
 
             prefix = msg[0]
@@ -170,12 +171,16 @@ def handle_client(conn, addr):
                     usernames[addr] = threading.activeCount() - 1
                     send_to_all(msg[1], usernames[addr])
 
-    send_object_to_all(('l', usernames[addr]))
-    time.sleep(0.5)
+        else: #Disconnect client if header is blank
+            connected = False
+
+
     online_users.remove(usernames[addr])
     connections.remove(conn) #Remove from connections list
     del conn_usernames[usernames[addr]]
+    send_object_to_all(('l', usernames[addr]))
     del usernames[addr]
+    time.sleep(0.5)
     conn.close()
     print("Closed connection.")
 
@@ -184,13 +189,17 @@ def start():
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:
-        conn, addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, addr)) #Create a new thread for every client that joins
-        thread.start()
-        connections.append(conn) #Append the connection object for send_to_all() to loop through 
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        try:
+            conn, addr = server.accept()
+            thread = threading.Thread(target=handle_client, args=(conn, addr)) #Create a new thread for every client that joins
+            thread.start()
+            connections.append(conn) #Append the connection object for send_to_all() to loop through
+            print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        except socket.timeout:
+            pass
 
 
 print("[STARTING] server is starting...")
 start()
+
 
