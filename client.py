@@ -44,85 +44,65 @@ def save_config():
         file = json.dump(data, file)
 
 
+HEADER = 64
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "disconnect"
+time.sleep(0.4)
+
+server_bound = False
+
+client = ''
+
+def connect(server, port, username):
+    global server_bound
+    global client
+
+    ADDR = (server, port)
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.setdefaulttimeout(7)
+    try:
+        client.connect(ADDR)
+    except ConnectionRefusedError:
+        tkinter.messagebox.showinfo("Error", "Server is not running.")
+        exit()
+    except socket.gaierror:
+        tkinter.messagebox.showinfo("Error", "Host does not exist or is not online.")
+    #except:
+        #tkinter.messagebox.showinfo("Error", "An unexpected error occured.")
+    
+    time.sleep(1)
+    server_bound = True
+    print("Bound to server")
+
+
 top = tkinter.Tk()
 top.title('PyChat')
 top.resizable(False, False)
 top.configure(bg=theme[0])
 
-HEADER = 64
-FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "disconnect"
-time.sleep(0.4)
-SERVER = simpledialog.askstring("Server chooser", "Type the hostname or ip of a server: ")
-if SERVER == "local" or SERVER == 'l':
-    SERVER = socket.gethostname()
-PORT = int(simpledialog.askstring("Port", "Type the port: "))
-ADDR = (SERVER, PORT)
-
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
-try:
-    emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
-except:
-    emojis = [" Not supported"]
+space = tkinter.Label(bg=theme[0])
+server_label = tkinter.Label(text="Server adress")
+server_entry = tkinter.Entry()
+port_label = tkinter.Label(text="Port number")
+port_entry = tkinter.Entry()
+connect_button = tkinter.Button(text="Connect!",bg=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
+
+server_label.pack()
+server_entry.pack()
+space.pack()
+port_label.pack()
+port_entry.pack()
+space.pack()
+connect_button.pack()
+
+print("UI initialised")
+
 
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
 leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
-
-#Init socket
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-try:
-    client.connect(ADDR)
-except ConnectionRefusedError:
-    tkinter.messagebox.showinfo("Error", "Server is not running.")
-    exit()
-except socket.gaierror:
-    tkinter.messagebox.showinfo("Error", "Host does not exist or is not online.")
-
-#Init UI
-
-messages_frame = tkinter.Frame(top)
-msg_list = tkinter.Listbox(messages_frame, height=15, width=50)
-msg_list.config(bg=theme[1])
-msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
-msg_list.pack()
-messages_frame.pack()
-
-users_frame = tkinter.Frame(top)
-user_list = tkinter.Listbox(messages_frame, height=15, width=15)
-user_list.config(bg=theme[1])
-user_list.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
-user_list.pack()
-users_frame.pack()
-
-user_list.insert(tkinter.END, "ONLINE USERS:")
-
-
-entrymsg = tkinter.StringVar()
-entry_field = tkinter.Entry(top, textvariable=entrymsg)
-
-
-def send_current_text(key): send(entry_field.get()) #Its working now but I need to pass in params
-entry_field.bind('<Return>', send_current_text)
-
-entry_field.pack()
-send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get())) 
-send_button.pack()
-
-variable = tkinter.StringVar(top)
-variable.set(emojis[0])
-emoji_opt = tkinter.OptionMenu(top, variable, *emojis)
-emoji_opt.pack(side=tkinter.LEFT)
-print(variable.get())
-
-def send_emoji(): entrymsg.set(entrymsg.get() + variable.get()[0])
-
-emoji_button = tkinter.Button(top, text="➡️", command=send_emoji)
-emoji_button.pack(side=tkinter.LEFT)
-
-
-msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands")
 
 #handles close window event
 def close_window():
@@ -134,11 +114,10 @@ def close_window():
     exit()
 top.protocol("WM_DELETE_WINDOW", close_window)
 
-
 def send(msg):  #takes in a string from entry field3.
     
     global username
-
+    global entry_field
     global muted
     global theme_name
 
@@ -245,6 +224,8 @@ def send(msg):  #takes in a string from entry field3.
 
 def recive():
     global muted
+    global msg_list
+    global user_list
     running = True
 
     while running:
@@ -313,19 +294,93 @@ def clock():
         client.send(message)
 
 
+msg_list = None
+user_list = None
+entry_field = None
 
-msg = ('u', username) #Send username
+def on_start():
+    global client
+    global msg_list
+    global user_list
+    global entry_field
 
-message = pickle.dumps(msg)
-msg_length = len(message)
-send_length = str(msg_length).encode(FORMAT)
-send_length += b' ' * (HEADER - len(send_length))
-client.send(send_length)
-client.send(message)
+    while True:
+        if server_bound == True: #Only start once the user has entered a server and port
 
-rcv_thread = threading.Thread(target=recive)
-rcv_thread.start()
-clock_thread = threading.Thread(target=clock)
-clock_thread.start()
+            server_label.destroy()
+            server_entry.destroy()
+            space.destroy()
+            port_label.destroy()
+            port_entry.destroy()
+            space.destroy()
+            connect_button.destroy()
+
+
+            try:
+                emojis = ["😀","😃","😄","😁","😆","😂","😊", "😉", "😛", "😎", "😭"]
+            except:
+                emojis = [" Not supported"]
+
+
+            #Init UI
+
+            messages_frame = tkinter.Frame(top)
+            msg_list = tkinter.Listbox(messages_frame, height=15, width=50)
+            msg_list.config(bg=theme[1])
+            msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
+            msg_list.pack()
+            messages_frame.pack()
+
+            users_frame = tkinter.Frame(top)
+            user_list = tkinter.Listbox(messages_frame, height=15, width=15)
+            user_list.config(bg=theme[1])
+            user_list.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
+            user_list.pack()
+            users_frame.pack()
+            user_list.insert(tkinter.END, "ONLINE USERS:")
+            entrymsg = tkinter.StringVar()
+            entry_field = tkinter.Entry(top, textvariable=entrymsg)
+
+            def send_current_text(key): send(entry_field.get()) #Its working now but I need to pass in params
+            entry_field.bind('<Return>', send_current_text)
+
+            entry_field.pack()
+            send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get())) 
+            send_button.pack()
+
+            variable = tkinter.StringVar(top)
+            variable.set(emojis[0])
+            emoji_opt = tkinter.OptionMenu(top, variable, *emojis)
+            emoji_opt.pack(side=tkinter.LEFT)
+
+            def send_emoji(): entrymsg.set(entrymsg.get() + variable.get()[0])
+
+            emoji_button = tkinter.Button(top, text="➡️", command=send_emoji)
+            emoji_button.pack(side=tkinter.LEFT)
+
+            msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands")
+
+
+
+            msg = ('u', username) #Send username
+
+            message = pickle.dumps(msg)
+            msg_length = len(message)
+            send_length = str(msg_length).encode(FORMAT)
+            send_length += b' ' * (HEADER - len(send_length))
+            client.send(send_length)
+            client.send(message)
+
+            rcv_thread = threading.Thread(target=recive)
+            rcv_thread.start()
+            clock_thread = threading.Thread(target=clock)
+            clock_thread.start()
+
+            break
+
+
+on_start_thread = threading.Thread(target=on_start) 
+on_start_thread.start()
+
 
 tkinter.mainloop()

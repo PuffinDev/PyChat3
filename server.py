@@ -92,87 +92,88 @@ def handle_client(conn, addr):
 
         try:
             msg_length = conn.recv(HEADER).decode(FORMAT)
+            print(msg_length)
+
+            if msg_length:
+                msg_length = int(msg_length)
+            
+                try:
+                    msg = conn.recv(msg_length)
+                except:
+                    connected = False #Disconnect if failed to recive header
+
+                msg = pickle.loads(msg)
+
+                prefix = msg[0]
+                if prefix == 'm':
+                    is_command = False
+                else:
+                    is_command = True
+
+                if msg[1] == DISCONNECT_MESSAGE:
+                    connected = False
+                if prefix == 'u':
+                    if msg[1] in usernames.values():
+                        time.sleep(0.5)
+                        send(usernames[addr], ('r', "That username is taken. please choose another."))
+                        print("username taken")
+                    else:
+                        usernames[addr] = msg[1]
+                        print(usernames)
+                        conn_usernames[msg[1]] = conn
+                        send(usernames[addr], ('r', "Username has been set to " + msg[1]))
+                        username_set = True
+                        print("username set to " + msg[1])
+
+                if prefix == 'b':
+                    if addr[0] in admins:
+                        try:
+                            banned.append(addr_from_username(msg[1]))
+                            write_config()
+                            send(msg[1], ('x')) #x command: disconnects client
+                            send(usernames[addr], ('r', 'User banned successfully!'))
+                        except:
+                            send(usernames[addr], ('r', 'User does not exist'))
+
+                    else:
+                        send(msg[1], ('r', 'You are not an admin!'))
+
+                if prefix == 'a':
+                    if addr[0] in admins:
+                        try:
+                            banned.remove(addr_from_username(msg[1]))
+                            write_config()
+                            send(usernames[addr], ('r', 'User unbanned successfully!'))
+                        except:
+                            send(usernames[addr], ('r', 'User is not banned!'))
+                            send(usernames[addr], ('r', addr_from_username(msg[1])))
+                        
+                    else:
+                        send(msg[1], ('r', 'You are not an admin!'))
+
+                if prefix == 'd':
+                    try:
+                        send(msg[1], ('d', msg[2], usernames[addr]))
+                    except:
+                        conn.send(pickle.dumps(('r', "User does not exist.")))
+
+                    
+
+                print(f"[{str(addr).strip('(').strip(')')}] {msg}")
+                
+                if is_command == False:
+                    try:
+                        send_to_all(msg[1], usernames[addr])
+                    except KeyError:
+                        usernames[addr] = threading.activeCount() - 1
+                        send_to_all(msg[1], usernames[addr])
+
+            else: #Disconnect client if header is blank
+                connected = False
+        
         except: #timeout
             connected = False #Disconnect if failed to recive header
 
-        print(msg_length)
-        
-        if msg_length:
-            msg_length = int(msg_length)
-            
-            try:
-                msg = conn.recv(msg_length)
-            except:
-                connected = False #Disconnect if failed to recive header
-
-            msg = pickle.loads(msg)
-
-            prefix = msg[0]
-            if prefix == 'm':
-                is_command = False
-            else:
-                is_command = True
-
-            if msg[1] == DISCONNECT_MESSAGE:
-                connected = False
-            if prefix == 'u':
-                if msg[1] in usernames.values():
-                    time.sleep(0.5)
-                    send(usernames[addr], ('r', "That username is taken. please choose another."))
-                    print("username taken")
-                else:
-                    usernames[addr] = msg[1]
-                    print(usernames)
-                    conn_usernames[msg[1]] = conn
-                    send(usernames[addr], ('r', "Username has been set to " + msg[1]))
-                    username_set = True
-                    print("username set to " + msg[1])
-
-            if prefix == 'b':
-                if addr[0] in admins:
-                    try:
-                        banned.append(addr_from_username(msg[1]))
-                        write_config()
-                        send(msg[1], ('x')) #x command: disconnects client
-                        send(usernames[addr], ('r', 'User banned successfully!'))
-                    except:
-                        send(usernames[addr], ('r', 'User does not exist'))
-
-                else:
-                    send(msg[1], ('r', 'You are not an admin!'))
-
-            if prefix == 'a':
-                if addr[0] in admins:
-                    try:
-                        banned.remove(addr_from_username(msg[1]))
-                        write_config()
-                        send(usernames[addr], ('r', 'User unbanned successfully!'))
-                    except:
-                        send(usernames[addr], ('r', 'User is not banned!'))
-                        send(usernames[addr], ('r', addr_from_username(msg[1])))
-                    
-                else:
-                    send(msg[1], ('r', 'You are not an admin!'))
-
-            if prefix == 'd':
-                try:
-                    send(msg[1], ('d', msg[2], usernames[addr]))
-                except:
-                    conn.send(pickle.dumps(('r', "User does not exist.")))
-
-                
-
-            print(f"[{str(addr).strip('(').strip(')')}] {msg}")
-            
-            if is_command == False:
-                try:
-                    send_to_all(msg[1], usernames[addr])
-                except KeyError:
-                    usernames[addr] = threading.activeCount() - 1
-                    send_to_all(msg[1], usernames[addr])
-
-        else: #Disconnect client if header is blank
-            connected = False
 
 
     online_users.remove(usernames[addr])
