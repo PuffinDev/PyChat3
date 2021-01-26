@@ -5,7 +5,7 @@ import time
 import traceback
 
 HEADER = 64
-PORT = 8080
+PORT = 49001
 SERVER = "0.0.0.0"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'

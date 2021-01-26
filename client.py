@@ -84,12 +84,40 @@ top.configure(bg=theme[0])
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
 space = tkinter.Label(bg=theme[0])
+space2 = tkinter.Label(bg=theme[0])
+space3 = tkinter.Label(bg=theme[0])
+
+v = tkinter.IntVar()
+v.set(1)
+
+def set_official_server():
+    server_entry.delete(0, 'end')
+    port_entry.delete(0, 'end')
+    server_entry.insert(0, '45.80.160.111')
+    port_entry.insert(0, '49001')
+
+def set_custom_server():
+    server_entry.delete(0, 'end')
+    port_entry.delete(0, 'end')
+
+
+
+custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=101, command=set_custom_server)
+default_server = tkinter.Radiobutton(text="Official server", variable=v, value=102, command=set_official_server)
 server_label = tkinter.Label(text="Server adress")
 server_entry = tkinter.Entry()
 port_label = tkinter.Label(text="Port number")
 port_entry = tkinter.Entry()
+
+def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()), username)
+port_entry.bind('<Return>', connect_to_current_server)
+
+space3.pack()
 connect_button = tkinter.Button(text="Connect!",bg=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
 
+custom_server.pack()
+default_server.pack()
+space2.pack()
 server_label.pack()
 server_entry.pack()
 space.pack()
@@ -314,6 +342,8 @@ def on_start():
             port_entry.destroy()
             space.destroy()
             connect_button.destroy()
+            server_entry.destroy()
+            port_entry.destroy()
 
 
             try:
