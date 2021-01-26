@@ -112,7 +112,6 @@ port_entry = tkinter.Entry()
 def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()), username)
 port_entry.bind('<Return>', connect_to_current_server)
 
-space3.pack()
 connect_button = tkinter.Button(text="Connect!",bg=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
 
 custom_server.pack()
@@ -124,6 +123,7 @@ space.pack()
 port_label.pack()
 port_entry.pack()
 space.pack()
+space3.pack()
 connect_button.pack()
 
 print("UI initialised")
@@ -135,7 +135,10 @@ leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
 #handles close window event
 def close_window():
     save_config() #Save theme, muted, etc.
-    send(DISCONNECT_MESSAGE)
+    if server_bound:
+        send(DISCONNECT_MESSAGE)
+    else:
+        pass
     time.sleep(0.7)
     running = False
     top.destroy()
