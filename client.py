@@ -257,8 +257,14 @@ def send(msg):  #takes in a string from entry field3.
     msg_length = len(message)
     send_length = str(msg_length).encode(FORMAT)
     send_length += b' ' * (HEADER - len(send_length))
-    client.send(send_length)
-    client.send(message)
+    
+    try:
+        client.send(send_length)
+        client.send(message)
+    except BrokenPipeError:
+        tkinter.messagebox.showinfo("Info", "Server closed.")
+        top.destroy()
+        exit()
 
 
 def recive():
@@ -269,8 +275,14 @@ def recive():
 
     while running:
         #recive messages
-        recived_msg = pickle.loads(client.recv(2048))
-        print(recived_msg)
+        try:
+            recived_msg = pickle.loads(client.recv(2048))
+            print(recived_msg)
+        except EOFError: #If server is not responding
+            tkinter.messagebox.showinfo("Info","Server closed.")
+            top.destroy()
+            exit()
+
 
         prefix = recived_msg[0]
 
@@ -329,8 +341,11 @@ def clock():
         msg_length = len(message)
         send_length = str(msg_length).encode(FORMAT)
         send_length += b' ' * (HEADER - len(send_length))
-        client.send(send_length)
-        client.send(message)
+        try:
+            client.send(send_length)
+            client.send(message)
+        except BrokenPipeError:
+            tkinter.messagebox.showinfo("Info", "Server closed.")
 
 
 msg_list = None
