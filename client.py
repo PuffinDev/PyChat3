@@ -65,9 +65,12 @@ def connect(server, port, username):
         client.connect(ADDR)
     except ConnectionRefusedError:
         tkinter.messagebox.showinfo("Error", "Server is not running.")
+        top.destroy()
         exit()
     except socket.gaierror:
         tkinter.messagebox.showinfo("Error", "Host does not exist or is not online.")
+        top.destroy()
+        exit()
     #except:
         #tkinter.messagebox.showinfo("Error", "An unexpected error occured.")
     
@@ -337,7 +340,10 @@ def on_start():
 
     while True:
         if server_bound == True: #Only start once the user has entered a server and port
-
+            
+            custom_server.destroy()
+            default_server.destroy()
+            space2.destroy()
             server_label.destroy()
             server_entry.destroy()
             space.destroy()
