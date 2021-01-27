@@ -366,7 +366,6 @@ def on_start():
 
 
             #Init UI
-            top.geometry('710x430')
 
             messages_frame = tkinter.Frame(top)
             msg_list = tkinter.Listbox(messages_frame, height=16, width=60)
