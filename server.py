@@ -184,9 +184,15 @@ def handle_client(conn, addr):
 
     online_users.remove(usernames[addr])
     connections.remove(conn) #Remove from connections list
-    del conn_usernames[usernames[addr]]
+    try:
+        del conn_usernames[usernames[addr]]
+    except:
+        pass
     send_object_to_all(('l', usernames[addr]))
-    del usernames[addr]
+    try:
+        del usernames[addr]
+    except:
+        pass
     time.sleep(0.5)
     conn.close()
     print("Closed connection.")
