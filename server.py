@@ -5,7 +5,13 @@ import time
 import traceback
 
 HEADER = 64
-PORT = 49001
+PORT = input("Type a port >> ")
+if PORT == "":
+    PORT = 49001 #Default port
+try:
+    PORT = int(PORT)
+except:
+    print("Not a valid port. running on default port...")
 SERVER = "0.0.0.0"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
