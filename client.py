@@ -86,7 +86,7 @@ top.title('PyChat')
 top.resizable(False, False)
 top.configure(bg=theme[0])
 
-font = tkFont.Font(family="System",size=12)
+font = tkFont.Font(family="System",size=11)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
