@@ -2,6 +2,7 @@ import socket
 import pickle
 import tkinter
 from tkinter import simpledialog
+import tkinter.font as tkFont
 import threading
 from playsound import playsound
 import time
@@ -19,6 +20,7 @@ themes = {
     'rose': ['peach puff', 'pink'],
     'sweden': ['blue2', 'yellow'],
     'coal': ['grey12', 'grey29']
+    #'dark': ['grey10', 'grey16']
 }
 
 
@@ -83,6 +85,8 @@ top = tkinter.Tk()
 top.title('PyChat')
 top.resizable(False, False)
 top.configure(bg=theme[0])
+
+font = tkFont.Font(family="System",size=12)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
@@ -176,6 +180,7 @@ def send(msg):  #takes in a string from entry field3.
             top.configure(bg=theme[0])
             msg_list.config(bg=theme[1])
             user_list.config(bg=theme[1])
+            space3.config(bg=theme[0])
             msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)])
             msg_list.yview(tkinter.END)
         except KeyError:
@@ -349,7 +354,6 @@ def on_start():
             space.destroy()
             port_label.destroy()
             port_entry.destroy()
-            space.destroy()
             connect_button.destroy()
             server_entry.destroy()
             port_entry.destroy()
@@ -362,10 +366,11 @@ def on_start():
 
 
             #Init UI
+            top.geometry('710x430')
 
             messages_frame = tkinter.Frame(top)
-            msg_list = tkinter.Listbox(messages_frame, height=15, width=50)
-            msg_list.config(bg=theme[1])
+            msg_list = tkinter.Listbox(messages_frame, height=16, width=60)
+            msg_list.config(bg=theme[1], font=font)
             msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
             msg_list.pack()
             messages_frame.pack()
@@ -420,6 +425,5 @@ def on_start():
 
 on_start_thread = threading.Thread(target=on_start) 
 on_start_thread.start()
-
 
 tkinter.mainloop()
