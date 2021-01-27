@@ -6,6 +6,7 @@ Pychat2 is a python chat application created with socket.
 
 - Send long messages
 - Emoji support
+- Official server
 - easy to navigate GUI
 - Online users pannel
 - many commands
@@ -47,13 +48,14 @@ Themes
 
 ## Coming soon!
 
-- Various ug fixes
-- Better UI
 - User info + status
 - Chat history loading
 - Accounts
 - Extra admin commands
 - Server passwords
+
+If you have any ideas for features, join the discord!
+https://discord.gg/xygM5SzBcq
 
 ## Usage
 
