@@ -10,6 +10,8 @@ import json
 import random
 import textwrap
 
+running = True
+
 #Theme presets
 themes = {
     'beach': ['light sea green', 'pale goldenrod'],
@@ -24,6 +26,7 @@ themes = {
     #'dark': ['grey10', 'grey16']
 }
 
+socket.setdefaulttimeout(1)
 
 #Load config.json
 
@@ -110,8 +113,8 @@ def set_custom_server():
 
 
 
-custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=101, command=set_custom_server)
-default_server = tkinter.Radiobutton(text="Official server", variable=v, value=102, command=set_official_server)
+custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=101, command=set_custom_server, bg=theme[0], highlightthickness=0)
+default_server = tkinter.Radiobutton(text="Official server ", variable=v, value=102, command=set_official_server, bg=theme[0], highlightthickness=0)
 server_label = tkinter.Label(text="Server adress")
 server_entry = tkinter.Entry()
 port_label = tkinter.Label(text="Port number")
@@ -142,6 +145,8 @@ leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
 
 #handles close window event
 def close_window():
+    global running
+
     save_config() #Save theme, muted, etc.
     if server_bound:
         send(DISCONNECT_MESSAGE)
@@ -184,10 +189,11 @@ def send(msg):  #takes in a string from entry field3.
             msg_list.config(bg=theme[1])
             user_list.config(bg=theme[1])
             space3.config(bg=theme[0])
-            entry_field.config(bg=theme[0], highlightthickness=0)
-            send_button.config(bg=theme[0], highlightthickness=0, activebackground=theme[0])
-            emoji_opt.config(bg=theme[0], highlightthickness=0, activebackground=theme[0])
-            emoji_button.config(bg=theme[0], highlightthickness=0, activebackground=theme[0])
+            entry_field.config(bg=theme[0], highlightthickness=1)
+            msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
+            send_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+            emoji_opt.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+            emoji_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
             msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)])
             msg_list.yview(tkinter.END)
 
@@ -272,90 +278,111 @@ def send(msg):  #takes in a string from entry field3.
     except BrokenPipeError:
         tkinter.messagebox.showinfo("Info", "Server closed.")
         top.destroy()
-        exit()
+        return 0
+        print("Exited send")
+    except ConnectionResetError:
+        return 0
 
 
 def recive():
     global muted
     global msg_list
     global user_list
-    running = True
+    global running
+
+    timeout = False
 
     while running:
         #recive messages
         try:
             recived_msg = pickle.loads(client.recv(2048))
             print(recived_msg)
+            timeout = False
         except EOFError: #If server is not responding
-            tkinter.messagebox.showinfo("Info","Server closed.")
-            top.destroy()
-            exit()
-
-
-        prefix = recived_msg[0]
-
-        
-        if prefix == 'x':
-            msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
-            msg_list.yview(tkinter.END)
-            running = False
-            time.sleep(2)
-            top.destroy()
-
-        if prefix == 'r':
-            msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]))
-            msg_list.yview(tkinter.END)
-
-        if prefix == 'd': #A DM was recived
-            msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1])
-            msg_list.yview(tkinter.END)
-            if not muted:
-                playsound("resources/client/mention.mp3")
-        
-        if prefix == 'j':  #Someone joined
-            msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)])
-            msg_list.yview(tkinter.END)
-            user_list.insert(tkinter.END, recived_msg[1])
-
-        if prefix == 'l':  #Someone joined
-            msg_list.insert(tkinter.END, "< " + recived_msg[1] + " " + leave_messages[random.randint(0, len(leave_messages) - 1)])
-            msg_list.yview(tkinter.END)
-            idx = user_list.get(0, tkinter.END).index(recived_msg[1])
-            user_list.delete(idx)
-
-        if prefix == 'o':  #List of online members
-            for user in recived_msg[1]:
-                user_list.insert(tkinter.END, user)
-        
-        try:
-            if prefix in ['m'] and not recived_msg[2] == "disconnect":
-                
-                wrapper = textwrap.TextWrapper(width=50)
-
-                formated_msg = wrapper.wrap(text=recived_msg[1])
-
-                i=0
-                print(formated_msg)
-                for line in formated_msg:
-                    if i == 0: #Only show name on first line
-                        msg_list.insert(tkinter.END, recived_msg[2] + ': ' + line)
-                    else:
-                        msg_list.insert(tkinter.END, '|   ' + line)
-                    i+=1
-
-                msg_list.yview(tkinter.END)
-
-                if not recived_msg[2] == username:  #Play message recive sound if the message isn't from the user
-                    if not muted:
-                        if '@' + username in recived_msg:
-                            playsound('resources/client/mention.mp3')
-                        else:
-                            playsound('resources/client/recive.mp3')
-        except IndexError:
+            if running:
+                tkinter.messagebox.showinfo("Info","Server closed.")
+                top.destroy()
+                exit()
+            else:
+                print("exited recive")
+                return 0
+        except socket.timeout:
+            timeout = True
             pass
 
+        if not timeout:
+
+            prefix = recived_msg[0]
+
+            
+            if prefix == 'm':
+                if recived_msg[1] == "disconnect":
+                    return 0
+
+            if prefix == 'x':
+                msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
+                msg_list.yview(tkinter.END)
+                running = False
+                time.sleep(2)
+                top.destroy()
+
+            if prefix == 'r':
+                msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]))
+                msg_list.yview(tkinter.END)
+
+            if prefix == 'd': #A DM was recived
+                msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1])
+                msg_list.yview(tkinter.END)
+                if not muted:
+                    playsound("resources/client/mention.mp3")
+            
+            if prefix == 'j':  #Someone joined
+                msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)])
+                msg_list.yview(tkinter.END)
+                user_list.insert(tkinter.END, recived_msg[1])
+
+            if prefix == 'l':  #Someone joined
+                msg_list.insert(tkinter.END, "< " + recived_msg[1] + " " + leave_messages[random.randint(0, len(leave_messages) - 1)])
+                msg_list.yview(tkinter.END)
+                idx = user_list.get(0, tkinter.END).index(recived_msg[1])
+                user_list.delete(idx)
+
+            if prefix == 'o':  #List of online members
+                for user in recived_msg[1]:
+                    user_list.insert(tkinter.END, user)
+            
+            try:
+                if prefix in ['m'] and not recived_msg[2] == "disconnect":
+                    
+                    wrapper = textwrap.TextWrapper(width=50)
+
+                    formated_msg = wrapper.wrap(text=recived_msg[1])
+
+                    i=0
+                    print(formated_msg)
+                    for line in formated_msg:
+                        if i == 0: #Only show name on first line
+                            msg_list.insert(tkinter.END, recived_msg[2] + ': ' + line)
+                        else:
+                            msg_list.insert(tkinter.END, '|   ' + line)
+                        i+=1
+
+                    msg_list.yview(tkinter.END)
+
+                    if not recived_msg[2] == username:  #Play message recive sound if the message isn't from the user
+                        if not muted:
+                            if '@' + username in recived_msg:
+                                playsound('resources/client/mention.mp3')
+                            else:
+                                playsound('resources/client/recive.mp3')
+            except IndexError:
+                pass
+        
+    print("Exited recive")
+    return 0
+
 def clock():
-    while True:
+    while running:
         time.sleep(4)
         msg = ('k', '') #Send keepalive
         message = pickle.dumps(msg)
@@ -367,6 +394,8 @@ def clock():
             client.send(message)
         except BrokenPipeError:
             tkinter.messagebox.showinfo("Info", "Server closed.")
+    print("exited clock")
+    return 0
 
 
 msg_list = None
@@ -377,6 +406,7 @@ emoji_opt = None
 send_button = None
 
 def on_start():
+    global running
     global client
     global msg_list
     global user_list
@@ -411,7 +441,7 @@ def on_start():
 
             messages_frame = tkinter.Frame(top)
             msg_list = tkinter.Listbox(messages_frame, height=16, width=60)
-            msg_list.config(bg=theme[1], font=font)
+            msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
             msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
             msg_list.pack()
             messages_frame.pack()
@@ -425,26 +455,26 @@ def on_start():
             user_list.insert(tkinter.END, "ONLINE USERS:")
             entrymsg = tkinter.StringVar()
             entry_field = tkinter.Entry(top, textvariable=entrymsg, bg=theme[0], fg='black', highlightthickness=0)
-            entry_field.config(bg=theme[0], fg='black', highlightthickness=0)
+            entry_field.config(bg=theme[0], fg='black', highlightthickness=1)
 
             def send_current_text(key): send(entry_field.get())
             entry_field.bind('<Return>', send_current_text)
 
             entry_field.pack()
             send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get()))
-            send_button.config(bg=theme[0], fg='black', highlightthickness=0, activebackground=theme[0])####
+            send_button.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])####
             send_button.pack()
 
             variable = tkinter.StringVar(top)
             variable.set(emojis[0])
             emoji_opt = tkinter.OptionMenu(top, variable, *emojis)
-            emoji_opt.config(bg=theme[0], fg='black', highlightthickness=0, activebackground=theme[0])
+            emoji_opt.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])
             emoji_opt.pack(side=tkinter.LEFT)
 
             def send_emoji(): entrymsg.set(entrymsg.get() + variable.get()[0])
 
             emoji_button = tkinter.Button(top, text="➡️", command=send_emoji)
-            emoji_button.config(bg=theme[0], fg='black', highlightthickness=0, activebackground=theme[0])
+            emoji_button.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])
             emoji_button.pack(side=tkinter.LEFT)
 
             msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands")
@@ -463,7 +493,7 @@ def on_start():
             clock_thread = threading.Thread(target=clock)
             clock_thread.start()
 
-            break
+            return 0
 
 
 on_start_thread = threading.Thread(target=on_start) 
