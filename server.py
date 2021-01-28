@@ -98,7 +98,6 @@ def handle_client(conn, addr):
 
         try:
             msg_length = conn.recv(HEADER).decode(FORMAT)
-            print(msg_length)
 
             if msg_length:
                 msg_length = int(msg_length)
@@ -162,8 +161,6 @@ def handle_client(conn, addr):
                         send(msg[1], ('d', msg[2], usernames[addr]))
                     except:
                         conn.send(pickle.dumps(('r', "User does not exist.")))
-
-                print(f"[{str(addr).strip('(').strip(')')}] {msg}")
                 
                 if is_command == False:
                     try:
@@ -171,6 +168,9 @@ def handle_client(conn, addr):
                     except KeyError:
                         usernames[addr] = threading.activeCount() - 1
                         send_to_all(msg[1], usernames[addr])
+
+                if not prefix == 'k':
+                    print(f"[{str(addr).strip('(').strip(')')}] {msg}")
 
             else: #Disconnect client if header is blank
                 connected = False
