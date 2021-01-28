@@ -131,7 +131,7 @@ def handle_client(conn, addr):
                         username_set = True
                         print("username set to " + msg[1])
 
-                if prefix == 'b':
+                if prefix == 'b': #ban
                     if addr[0] in admins:
                         try:
                             banned.append(addr_from_username(msg[1]))
@@ -144,7 +144,7 @@ def handle_client(conn, addr):
                     else:
                         send(msg[1], ('r', 'You are not an admin!'))
 
-                if prefix == 'a':
+                if prefix == 'a': #unban
                     if addr[0] in admins:
                         try:
                             banned.remove(addr_from_username(msg[1]))
@@ -163,8 +163,6 @@ def handle_client(conn, addr):
                     except:
                         conn.send(pickle.dumps(('r', "User does not exist.")))
 
-                    
-
                 print(f"[{str(addr).strip('(').strip(')')}] {msg}")
                 
                 if is_command == False:
@@ -179,7 +177,6 @@ def handle_client(conn, addr):
         
         except: #timeout
             connected = False #Disconnect if failed to recive header
-
 
 
     online_users.remove(usernames[addr])

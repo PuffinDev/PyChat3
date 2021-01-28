@@ -8,6 +8,7 @@ from playsound import playsound
 import time
 import json
 import random
+import textwrap
 
 #Theme presets
 themes = {
@@ -177,12 +178,19 @@ def send(msg):  #takes in a string from entry field3.
         try:
             theme = themes[msg[7:len(msg)]]
             theme_name = msg[7:len(msg)]
+            
+            #Update UI
             top.configure(bg=theme[0])
             msg_list.config(bg=theme[1])
             user_list.config(bg=theme[1])
             space3.config(bg=theme[0])
+            entry_field.config(bg=theme[0], highlightthickness=0)
+            send_button.config(bg=theme[0], highlightthickness=0, activebackground=theme[0])
+            emoji_opt.config(bg=theme[0], highlightthickness=0, activebackground=theme[0])
+            emoji_button.config(bg=theme[0], highlightthickness=0, activebackground=theme[0])
             msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)])
             msg_list.yview(tkinter.END)
+
         except KeyError:
             msg_list.insert(tkinter.END, "[SYSTEM] " +  msg[7:len(msg)] + " is not a valid theme.")
             msg_list.yview(tkinter.END)
@@ -321,7 +329,20 @@ def recive():
         
         try:
             if prefix in ['m'] and not recived_msg[2] == "disconnect":
-                msg_list.insert(tkinter.END, recived_msg[2] + ': ' + recived_msg[1])
+                
+                wrapper = textwrap.TextWrapper(width=50)
+
+                formated_msg = wrapper.wrap(text=recived_msg[1])
+
+                i=0
+                print(formated_msg)
+                for line in formated_msg:
+                    if i == 0: #Only show name on first line
+                        msg_list.insert(tkinter.END, recived_msg[2] + ': ' + line)
+                    else:
+                        msg_list.insert(tkinter.END, '|   ' + line)
+                    i+=1
+
                 msg_list.yview(tkinter.END)
 
                 if not recived_msg[2] == username:  #Play message recive sound if the message isn't from the user
@@ -351,12 +372,18 @@ def clock():
 msg_list = None
 user_list = None
 entry_field = None
+emoji_button = None
+emoji_opt = None
+send_button = None
 
 def on_start():
     global client
     global msg_list
     global user_list
     global entry_field
+    global send_button
+    global emoji_opt
+    global emoji_button
 
     while True:
         if server_bound == True: #Only start once the user has entered a server and port
@@ -397,28 +424,30 @@ def on_start():
             users_frame.pack()
             user_list.insert(tkinter.END, "ONLINE USERS:")
             entrymsg = tkinter.StringVar()
-            entry_field = tkinter.Entry(top, textvariable=entrymsg)
+            entry_field = tkinter.Entry(top, textvariable=entrymsg, bg=theme[0], fg='black', highlightthickness=0)
+            entry_field.config(bg=theme[0], fg='black', highlightthickness=0)
 
-            def send_current_text(key): send(entry_field.get()) #Its working now but I need to pass in params
+            def send_current_text(key): send(entry_field.get())
             entry_field.bind('<Return>', send_current_text)
 
             entry_field.pack()
-            send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get())) 
+            send_button = tkinter.Button(top, text="Send", command=lambda: send(entry_field.get()))
+            send_button.config(bg=theme[0], fg='black', highlightthickness=0, activebackground=theme[0])####
             send_button.pack()
 
             variable = tkinter.StringVar(top)
             variable.set(emojis[0])
             emoji_opt = tkinter.OptionMenu(top, variable, *emojis)
+            emoji_opt.config(bg=theme[0], fg='black', highlightthickness=0, activebackground=theme[0])
             emoji_opt.pack(side=tkinter.LEFT)
 
             def send_emoji(): entrymsg.set(entrymsg.get() + variable.get()[0])
 
             emoji_button = tkinter.Button(top, text="➡️", command=send_emoji)
+            emoji_button.config(bg=theme[0], fg='black', highlightthickness=0, activebackground=theme[0])
             emoji_button.pack(side=tkinter.LEFT)
 
             msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands")
-
-
 
             msg = ('u', username) #Send username
 
