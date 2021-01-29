@@ -198,22 +198,22 @@ def send(msg):  #takes in a string from entry field3.
             msg_list.yview(tkinter.END)
 
         except KeyError:
-            msg_list.insert(tkinter.END, "[SYSTEM] " +  msg[7:len(msg)] + " is not a valid theme.")
+            msg_list.insert(tkinter.END, "[SYSTEM] " +  msg[7:len(msg)] + " is not a valid theme." + '\n')
             msg_list.yview(tkinter.END)
         return 0
 
     elif msg[1:7] == 'themes':
         for theme in themes.keys():
-            msg_list.insert(tkinter.END, "•" + theme)
+            msg_list.insert(tkinter.END, "•" + theme + '\n')
             msg_list.yview(tkinter.END)
 
     elif msg[1:5] == 'mute':
         muted = True
-        msg_list.insert(tkinter.END, "[SYSTEM] Muted notifications")
+        msg_list.insert(tkinter.END, "[SYSTEM] Muted notifications" + '\n')
         msg_list.yview(tkinter.END)
     elif msg[1:7] == 'unmute':
         muted = False
-        msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications")
+        msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications" + '\n')
         msg_list.yview(tkinter.END)
 
     elif msg[1:4] == 'ban':
@@ -238,24 +238,24 @@ def send(msg):  #takes in a string from entry field3.
         member = whole[0:from_char-1]
 
         if member == username:
-            msg_list.insert(tkinter.END, "[SYSTEM] You can't DM yourself!!")
+            msg_list.insert(tkinter.END, "[SYSTEM] You can't DM yourself!!" + '\n')
             return 0
 
         print("Member: " + member)
         message = whole[from_char:len(whole)]
 
-        msg_list.insert(tkinter.END, "[DM] " + username + ": " + message)
+        msg_list.insert(tkinter.END, "[DM] " + username + ": " + message + '\n')
         msg_list.yview(tkinter.END)
         msg = ('d', member, message)
 
     elif msg[1:5] == 'help':
-        msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server")
-        msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user")
-        msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme")
-        msg_list.insert(tkinter.END, "• /themes  - List theme names")
-        msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds")
-        msg_list.insert(tkinter.END, "• /unmute  - Unute notification sounds")
-        msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server")
+        msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
+        msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user" + '\n')
+        msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme" + '\n')
+        msg_list.insert(tkinter.END, "• /themes  - List theme names" + '\n')
+        msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds" + '\n')
+        msg_list.insert(tkinter.END, "• /unmute  - Unute notification sounds" + '\n')
+        msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server" + '\n')
         msg_list.yview(tkinter.END)
         return 0
         
@@ -320,29 +320,35 @@ def recive():
                     return 0
 
             if prefix == 'x':
-                msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server.")
+                msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server." + '\n')
                 msg_list.yview(tkinter.END)
                 running = False
                 time.sleep(2)
                 top.destroy()
 
             if prefix == 'r':
-                msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]))
+                msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]) + '\n')
                 msg_list.yview(tkinter.END)
 
             if prefix == 'd': #A DM was recived
-                msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1])
+                msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1] + '\n')
                 msg_list.yview(tkinter.END)
                 if not muted:
                     playsound("resources/client/mention.mp3")
             
             if prefix == 'j':  #Someone joined
-                msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)])
+                msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)] + '\n')
+                
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight", current_line + ".2", current_line + "." + str(len(recived_msg[1]) + 2)) #Hilight the username
+                msg_list.tag_config("hilight", foreground="red")
+                top.update()
+
                 msg_list.yview(tkinter.END)
                 user_list.insert(tkinter.END, recived_msg[1])
 
             if prefix == 'l':  #Someone joined
-                msg_list.insert(tkinter.END, "< " + recived_msg[1] + " " + leave_messages[random.randint(0, len(leave_messages) - 1)])
+                msg_list.insert(tkinter.END, "< " + recived_msg[1] + " " + leave_messages[random.randint(0, len(leave_messages) - 1)] + '\n')
                 msg_list.yview(tkinter.END)
                 idx = user_list.get(0, tkinter.END).index(recived_msg[1])
                 user_list.delete(idx)
@@ -362,9 +368,17 @@ def recive():
                     print(formated_msg)
                     for line in formated_msg:
                         if i == 0: #Only show name on first line
-                            msg_list.insert(tkinter.END, recived_msg[2] + ': ' + line)
+                
+                            msg_list.insert(tkinter.END, recived_msg[2] + ': ' + line + '\n')
+                            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                            msg_list.tag_add("hilight", current_line + ".0", current_line + "." + str(len(recived_msg[2]))) #Hilight the username
+                            msg_list.tag_config("hilight", foreground="red")
+                            top.update()
+
                         else:
-                            msg_list.insert(tkinter.END, '|   ' + line)
+
+                            msg_list.insert(tkinter.END, '|   ' + line + '\n')
+
                         i+=1
 
                     msg_list.yview(tkinter.END)
@@ -440,10 +454,12 @@ def on_start():
             #Init UI
 
             messages_frame = tkinter.Frame(top)
-            msg_list = tkinter.Listbox(messages_frame, height=16, width=60)
+            msg_list = tkinter.Text(messages_frame, height=16, width=60)
             msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
             msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
+            msg_list.bindtags((str(msg_list), str(top), "all"))
             msg_list.pack()
+
             messages_frame.pack()
 
             users_frame = tkinter.Frame(top)
@@ -477,7 +493,7 @@ def on_start():
             emoji_button.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])
             emoji_button.pack(side=tkinter.LEFT)
 
-            msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands")
+            msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
 
             msg = ('u', username) #Send username
 
