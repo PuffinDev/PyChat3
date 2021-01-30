@@ -16,7 +16,7 @@ running = True
 themes = {
     'beach': ['light sea green', 'pale goldenrod'],
     'ocean': ['aquamarine', 'turquoise'],
-    'spring': ['spring green', 'lime green'],
+    'spring': ['lime green', 'spring green'],
     'night': ['gray16', 'slate grey'],
     'sunset': ['dark orange', 'indian red'],
     'alpine': ['snow', 'lavender'],
@@ -194,11 +194,26 @@ def send(msg):  #takes in a string from entry field3.
             send_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
             emoji_opt.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
             emoji_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
-            msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)])
+            msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)] + '\n')
+
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+
+            print(current_line + ".0", current_line + "." + "8")
+
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+
             msg_list.yview(tkinter.END)
 
         except KeyError:
             msg_list.insert(tkinter.END, "[SYSTEM] " +  msg[7:len(msg)] + " is not a valid theme." + '\n')
+
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+
             msg_list.yview(tkinter.END)
         return 0
 
@@ -210,10 +225,22 @@ def send(msg):  #takes in a string from entry field3.
     elif msg[1:5] == 'mute':
         muted = True
         msg_list.insert(tkinter.END, "[SYSTEM] Muted notifications" + '\n')
+
+        current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+        msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+        msg_list.tag_config("hilight_system", foreground="blue")
+        top.update()
+
         msg_list.yview(tkinter.END)
     elif msg[1:7] == 'unmute':
         muted = False
         msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications" + '\n')
+
+        current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+        msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+        msg_list.tag_config("hilight_system", foreground="blue")
+        top.update()
+
         msg_list.yview(tkinter.END)
 
     elif msg[1:4] == 'ban':
@@ -239,14 +266,26 @@ def send(msg):  #takes in a string from entry field3.
 
         if member == username:
             msg_list.insert(tkinter.END, "[SYSTEM] You can't DM yourself!!" + '\n')
+            
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+
             return 0
+        else:
+            print("Member: " + member)
+            message = whole[from_char:len(whole)]
 
-        print("Member: " + member)
-        message = whole[from_char:len(whole)]
+            msg_list.insert(tkinter.END, "[DM] " + username + ": " + message + '\n')
+            
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight", current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
+            msg_list.tag_config("hilight", foreground="red")
+            top.update()
 
-        msg_list.insert(tkinter.END, "[DM] " + username + ": " + message + '\n')
-        msg_list.yview(tkinter.END)
-        msg = ('d', member, message)
+            msg_list.yview(tkinter.END)
+            msg = ('d', member, message)
 
     elif msg[1:5] == 'help':
         msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
@@ -321,6 +360,12 @@ def recive():
 
             if prefix == 'x':
                 msg_list.insert(tkinter.END, "[SYSTEM] You have been banned from the server." + '\n')
+
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_config("hilight_system", foreground="blue")
+                top.update()
+
                 msg_list.yview(tkinter.END)
                 running = False
                 time.sleep(2)
@@ -328,10 +373,22 @@ def recive():
 
             if prefix == 'r':
                 msg_list.insert(tkinter.END, "[SYSTEM] " + str(recived_msg[1]) + '\n')
+
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_config("hilight_system", foreground="blue")
+                top.update()
+
                 msg_list.yview(tkinter.END)
 
             if prefix == 'd': #A DM was recived
                 msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1] + '\n')
+
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight", current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
+                msg_list.tag_config("hilight", foreground="red")
+                top.update()
+
                 msg_list.yview(tkinter.END)
                 if not muted:
                     playsound("resources/client/mention.mp3")
@@ -494,6 +551,12 @@ def on_start():
             emoji_button.pack(side=tkinter.LEFT)
 
             msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
+
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+
 
             msg = ('u', username) #Send username
 
