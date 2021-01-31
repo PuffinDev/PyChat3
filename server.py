@@ -24,6 +24,8 @@ server.bind(ADDR)
 
 connections = []
 usernames = {}
+user_colours = {}
+valid_colours = ["green", "orange", "blue", "purple", "red", "turquoise", "red4"]
 conn_usernames = {}
 online_users = []
 
@@ -53,8 +55,8 @@ def write_config():
         for member in banned:
             file.write(member + "\n")
 
-def send_to_all(msg, user):
-    msg = ('m', msg, user)
+def send_to_all(msg, user, colour):
+    msg = ('m', msg, user, colour)
     for conn in connections:
         conn.send(pickle.dumps(msg))
 
@@ -90,7 +92,7 @@ def handle_client(conn, addr):
 
         if username_set and not join_message_sent:
             time.sleep(0.5)
-            send_object_to_all(('j', usernames[addr]))
+            send_object_to_all(('j', usernames[addr], user_colours[addr]))
             online_users.append(usernames[addr])
             print(online_users)
             join_message_sent = True
@@ -105,7 +107,7 @@ def handle_client(conn, addr):
                 try:
                     msg = conn.recv(msg_length)
                 except:
-                    connected = False #Disconnect if failed to recive header
+                    connected = False
 
                 msg = pickle.loads(msg)
 
@@ -123,7 +125,8 @@ def handle_client(conn, addr):
                         send(usernames[addr], ('r', "That username is taken. please choose another."))
                         print("username taken")
                     else:
-                        usernames[addr] = msg[1]
+                        usernames[addr] = msg[1] #set username
+                        user_colours[addr] = msg[2] #set colour
                         print(usernames)
                         conn_usernames[msg[1]] = conn
                         send(usernames[addr], ('r', "Username has been set to " + msg[1]))
@@ -158,25 +161,34 @@ def handle_client(conn, addr):
 
                 if prefix == 'd':
                     try:
-                        send(msg[1], ('d', msg[2], usernames[addr]))
+                        send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
                     except:
                         conn.send(pickle.dumps(('r', "User does not exist.")))
+
+                if prefix == 'c':
+                    if msg[1] in valid_colours:
+                        user_colours[addr] = msg[1]
+                        send(usernames[addr], ('r', 'Changed username colour to ' + msg[1]))
+                    else:
+                        send(usernames[addr], ('r', 'That is not a valid colour. type \'/colours\'.'))
                 
                 if is_command == False:
                     try:
-                        send_to_all(msg[1], usernames[addr])
+                        send_to_all(msg[1], usernames[addr], user_colours[addr])
                     except KeyError:
                         usernames[addr] = threading.activeCount() - 1
-                        send_to_all(msg[1], usernames[addr])
+                        send_to_all(msg[1], usernames[addr], "red")
 
                 if not prefix == 'k':
                     print(f"[{str(addr).strip('(').strip(')')}] {msg}")
 
             else: #Disconnect client if header is blank
+                print("Blank header")
                 connected = False
         
-        except: #timeout
+        except socket.timeout: #timeout
             connected = False #Disconnect if failed to recive header
+            print("Timeout")
 
 
     online_users.remove(usernames[addr])

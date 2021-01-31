@@ -51,6 +51,12 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "disconnect"
 time.sleep(0.4)
 
+user_colours = ["green", "orange", "blue", "purple", "red", "turquoise", "red4"]
+user_colour = user_colours[random.randint(0, len(user_colours) - 1)]
+
+join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
+leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
+
 server_bound = False
 
 client = ''
@@ -135,9 +141,6 @@ connect_button.pack()
 
 print("UI initialised")
 
-
-join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
-leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
 
 #handles close window event
 def close_window():
@@ -226,8 +229,19 @@ def send(msg):  #takes in a string from entry field3.
         msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
         msg_list.tag_config("hilight_system", foreground="blue")
         top.update()
-
         msg_list.yview(tkinter.END)
+
+    elif msg[1:8] == 'colour ':
+        print("colour")
+        user_colour = msg[8:len(msg)]
+        msg = ('c', msg[8:len(msg)])
+
+    elif msg[1:8] == 'colours':
+        print("colours")
+        for colour in user_colours:
+            msg_list.insert(tkinter.END, "•" + colour + '\n')
+            msg_list.yview(tkinter.END)
+
     elif msg[1:7] == 'unmute':
         muted = False
         msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications" + '\n')
@@ -276,8 +290,8 @@ def send(msg):  #takes in a string from entry field3.
             msg_list.insert(tkinter.END, "[DM] " + username + ": " + message + '\n')
             
             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight", current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
-            msg_list.tag_config("hilight", foreground="red")
+            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
+            msg_list.tag_config("hilight-" + username, foreground=user_colour)
             top.update()
 
             msg_list.yview(tkinter.END)
@@ -291,13 +305,15 @@ def send(msg):  #takes in a string from entry field3.
         msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds" + '\n')
         msg_list.insert(tkinter.END, "• /unmute  - Unute notification sounds" + '\n')
         msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server" + '\n')
+        msg_list.insert(tkinter.END, "• /colour [colour name]  - Set your username to a colour" + '\n')
+        msg_list.insert(tkinter.END, "• /colours - List all username colours" + '\n')
         msg_list.yview(tkinter.END)
         return 0
         
     else:
-        print(msg)
         is_command = False
-        msg = ('m', msg) #  ( message type goes here , args go here )
+        msg = ('m', msg) #  ( message/command type goes here , args go here )
+        print(msg)
     
 
     entry_field.config(textvariable=None)
@@ -381,8 +397,8 @@ def recive():
                 msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1] + '\n')
 
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                msg_list.tag_add("hilight", current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
-                msg_list.tag_config("hilight", foreground="red")
+                msg_list.tag_add("hilight-" + recived_msg[2], current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
+                msg_list.tag_config("hilight-" + recived_msg[2], foreground=recived_msg[3])
                 top.update()
 
                 msg_list.yview(tkinter.END)
@@ -393,8 +409,8 @@ def recive():
                 msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)] + '\n')
                 
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                msg_list.tag_add("hilight", current_line + ".2", current_line + "." + str(len(recived_msg[1]) + 2)) #Hilight the username
-                msg_list.tag_config("hilight", foreground="red")
+                msg_list.tag_add("hilight-" + recived_msg[1], current_line + ".2", current_line + "." + str(len(recived_msg[1]) + 2)) #Hilight the username
+                msg_list.tag_config("hilight-" + recived_msg[1], foreground=recived_msg[2])
                 top.update()
 
                 msg_list.yview(tkinter.END)
@@ -424,8 +440,8 @@ def recive():
                 
                             msg_list.insert(tkinter.END, recived_msg[2] + ': ' + line + '\n')
                             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                            msg_list.tag_add("hilight", current_line + ".0", current_line + "." + str(len(recived_msg[2]))) #Hilight the username
-                            msg_list.tag_config("hilight", foreground="red")
+                            msg_list.tag_add("hilight-" + recived_msg[2], current_line + ".0", current_line + "." + str(len(recived_msg[2]))) #Hilight the username
+                            msg_list.tag_config("hilight-" + recived_msg[2], foreground=recived_msg[3])
                             top.update()
 
                         else:
@@ -555,7 +571,7 @@ def on_start():
             top.update()
 
 
-            msg = ('u', username) #Send username
+            msg = ('u', username, user_colour) #Send username and colour
 
             message = pickle.dumps(msg)
             msg_length = len(message)
