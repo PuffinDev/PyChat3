@@ -15,18 +15,14 @@ running = True
 #Theme presets
 themes = {
     'beach': ['light sea green', 'pale goldenrod'],
-    'ocean': ['aquamarine', 'turquoise'],
-    'spring': ['lime green', 'spring green'],
+    'sky': ['SkyBlue1', 'powder blue'],
     'night': ['gray16', 'slate grey'],
-    'sunset': ['dark orange', 'indian red'],
     'alpine': ['snow', 'lavender'],
     'rose': ['peach puff', 'pink'],
-    'sweden': ['blue2', 'yellow'],
-    'coal': ['grey12', 'grey29']
-    #'dark': ['grey10', 'grey16']
+    'sweden': ['blue2', 'gold'],
+    'coal': ['grey12', 'grey29'],
+    'spring': ['PaleGreen1', 'turquoise']
 }
-
-socket.setdefaulttimeout(1)
 
 #Load config.json
 
@@ -488,7 +484,8 @@ def on_start():
 
     while True:
         if server_bound == True: #Only start once the user has entered a server and port
-            
+            socket.setdefaulttimeout(1)
+
             custom_server.destroy()
             default_server.destroy()
             space2.destroy()
