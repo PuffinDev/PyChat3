@@ -339,12 +339,12 @@ def send(msg):  #takes in a string from entry field3.
     try:
         client.send(send_length)
         client.send(message)
-    except BrokenPipeError:
-        tkinter.messagebox.showinfo("Info", "Server closed.")
-        top.destroy()
-        return 0
-        print("Exited send")
     except ConnectionResetError:
+        return 0
+    except BrokenPipeError:
+        tkinter.messagebox.showinfo("Info", "Lost connection with server.")
+        top.destroy()
+        print("Exited send")
         return 0
 
 
@@ -366,6 +366,7 @@ def recive():
         except EOFError: #If server is not responding
             if running:
                 tkinter.messagebox.showinfo("Info","Server closed.")
+                running = False
                 top.destroy()
                 exit()
             else:
@@ -483,7 +484,14 @@ def recive():
     return 0
 
 def clock():
+    global running
     while running:
+        
+        for i in range(16):
+            time.sleep(0.25)
+            if not running:
+                return 0
+        
         time.sleep(4)
         msg = ('k', '') #Send keepalive
         message = pickle.dumps(msg)
@@ -494,7 +502,7 @@ def clock():
             client.send(send_length)
             client.send(message)
         except BrokenPipeError:
-            tkinter.messagebox.showinfo("Info", "Server closed.")
+            tkinter.messagebox.showinfo("Info", "Lost connection.")
     print("exited clock")
     return 0
 
