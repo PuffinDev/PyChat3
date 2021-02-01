@@ -147,7 +147,10 @@ def handle_client(conn, addr):
                             send(usernames[addr], ('r', 'User does not exist'))
 
                     else:
-                        send(msg[1], ('r', 'You are not an admin!'))
+                        send(usernames[addr], ('r', 'You are not an admin!'))
+                        print("Not admin")
+                        print(admins)
+                        print(addr[0])
 
                 if prefix == 'a': #unban
                     if addr[0] in admins:
@@ -160,7 +163,7 @@ def handle_client(conn, addr):
                             send(usernames[addr], ('r', addr_from_username(msg[1])))
                         
                     else:
-                        send(msg[1], ('r', 'You are not an admin!'))
+                        send(usernames[addr], ('r', 'You are not an admin!'))
 
                 if prefix == 'd':
                     try:
@@ -226,5 +229,3 @@ def start():
 
 print("[STARTING] server is starting...")
 start()
-
-
