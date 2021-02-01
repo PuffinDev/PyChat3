@@ -164,6 +164,9 @@ def send(msg):  #takes in a string from entry field3.
     global muted
     global theme_name
 
+    if msg == '': #Don't send if message is blank
+        return 0
+
     if msg[0] == '/':  #checking if message is command
         is_command = True
         if not muted:
