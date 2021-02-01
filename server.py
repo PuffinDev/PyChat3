@@ -119,19 +119,22 @@ def handle_client(conn, addr):
 
                 if msg[1] == DISCONNECT_MESSAGE:
                     connected = False
+
                 if prefix == 'u':
+                    username = msg[1].replace(' ', '')
+
                     if msg[1] in usernames.values():
                         time.sleep(0.5)
                         send(usernames[addr], ('r', "That username is taken. please choose another."))
                         print("username taken")
                     else:
-                        usernames[addr] = msg[1] #set username
+                        usernames[addr] = username #set username
                         user_colours[addr] = msg[2] #set colour
                         print(usernames)
-                        conn_usernames[msg[1]] = conn
-                        send(usernames[addr], ('r', "Username has been set to " + msg[1]))
+                        conn_usernames[username] = conn
+                        send(usernames[addr], ('r', "Username has been set to " + username))
                         username_set = True
-                        print("username set to " + msg[1])
+                        print("username set to " + username)
 
                 if prefix == 'b': #ban
                     if addr[0] in admins:
