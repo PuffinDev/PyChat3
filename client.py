@@ -160,6 +160,7 @@ top.protocol("WM_DELETE_WINDOW", close_window)
 def send(msg):  #takes in a string from entry field3.
     
     global username
+    global user_colour
     global entry_field
     global muted
     global theme_name
@@ -287,13 +288,12 @@ def send(msg):  #takes in a string from entry field3.
 
             return 0
         else:
-            print("Member: " + member)
             message = whole[from_char:len(whole)]
 
             msg_list.insert(tkinter.END, "[DM] " + username + ": " + message + '\n')
             
             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
+            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(len(username) + 5)) #Hilight the username
             msg_list.tag_config("hilight-" + username, foreground=user_colour)
             top.update()
 
@@ -400,7 +400,7 @@ def recive():
                 msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1] + '\n')
 
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                msg_list.tag_add("hilight-" + recived_msg[2], current_line + ".5", current_line + "." + str(len(recived_msg[1]) + 5)) #Hilight the username
+                msg_list.tag_add("hilight-" + recived_msg[2], current_line + ".5", current_line + "." + str(len(recived_msg[2]) + 5)) #Hilight the username
                 msg_list.tag_config("hilight-" + recived_msg[2], foreground=recived_msg[3])
                 top.update()
 
