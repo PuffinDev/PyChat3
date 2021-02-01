@@ -267,6 +267,10 @@ def send(msg):  #takes in a string from entry field3.
 
         msg_list.yview(tkinter.END)
 
+    elif msg[1:8] == 'sendobj':
+        obj = msg[9:len(msg)]
+        msg = eval(obj)
+
     elif msg[1:4] == 'ban':
         member = msg[5:len(msg)]
         msg = ('b', member)
@@ -322,7 +326,7 @@ def send(msg):  #takes in a string from entry field3.
         msg_list.insert(tkinter.END, "• /colours - List all username colours" + '\n')
         msg_list.yview(tkinter.END)
         return 0
-        
+
     else:
         is_command = False
         msg = ('m', msg) #  ( message/command type goes here , args go here )
@@ -486,7 +490,7 @@ def recive():
 def clock():
     global running
     while running:
-        
+
         for i in range(16):
             time.sleep(0.25)
             if not running:
@@ -513,6 +517,7 @@ entry_field = None
 emoji_button = None
 emoji_opt = None
 send_button = None
+loading = None
 
 def on_start():
     global running
@@ -523,9 +528,10 @@ def on_start():
     global send_button
     global emoji_opt
     global emoji_button
+    global loading
 
     while True:
-        if server_bound == True: #Only start once the user has entered a server and port
+        if server_bound: #Only start once the user has entered a server and port
             socket.setdefaulttimeout(1)
 
             custom_server.destroy()
@@ -597,19 +603,19 @@ def on_start():
             top.update()
 
 
-            msg = ('u', username, user_colour) #Send username and colour
+            rcv_thread = threading.Thread(target=recive)
+            rcv_thread.start()
+            clock_thread = threading.Thread(target=clock)
+            clock_thread.start()
 
+
+            msg = ('u', username, user_colour) #Send username and colour
             message = pickle.dumps(msg)
             msg_length = len(message)
             send_length = str(msg_length).encode(FORMAT)
             send_length += b' ' * (HEADER - len(send_length))
             client.send(send_length)
             client.send(message)
-
-            rcv_thread = threading.Thread(target=recive)
-            rcv_thread.start()
-            clock_thread = threading.Thread(target=clock)
-            clock_thread.start()
 
             return 0
 
