@@ -24,6 +24,9 @@ themes = {
     'spring': ['PaleGreen1', 'turquoise']
 }
 
+colour_set = False
+user_colours = ["green", "orange", "blue", "purple", "red", "turquoise", "red4"]
+
 #Load config.json
 
 with open("resources/client/config.json", 'r') as file:
@@ -33,16 +36,26 @@ with open("resources/client/config.json", 'r') as file:
     theme = themes[data["theme"]]
     theme_name = data["theme"]
     muted = data["muted"]
+    try:
+        user_colour = data["user_colour"]
+        colour_set = True
+    except:
+        user_colour = user_colours[random.randint(0, len(user_colours) - 1)]
+        colour_set = False
+
+#Save config
 
 def save_config():
     global theme_name
     global muted
+    global colour_set
+    global user_colour
 
     with open("resources/client/config.json", 'w') as file:
 
         data["theme"] = theme_name
         data["muted"] = muted
-
+        if colour_set: data["user_colour"] = user_colour
         file = json.dump(data, file)
 
 
@@ -50,9 +63,6 @@ HEADER = 64
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "disconnect"
 time.sleep(0.4)
-
-user_colours = ["green", "orange", "blue", "purple", "red", "turquoise", "red4"]
-user_colour = user_colours[random.randint(0, len(user_colours) - 1)]
 
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
 leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
@@ -343,6 +353,7 @@ def recive():
     global msg_list
     global user_list
     global running
+    global colour_set
 
     timeout = False
 
@@ -393,8 +404,12 @@ def recive():
                 msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
                 msg_list.tag_config("hilight_system", foreground="blue")
                 top.update()
-
                 msg_list.yview(tkinter.END)
+
+                if str(recived_msg[1][0:26]) == "Changed username colour to":
+                    print("colour cmd")
+                    colour_set = True
+                    save_config()
 
             if prefix == 'd': #A DM was recived
                 msg_list.insert(tkinter.END, "[DM] " + recived_msg[2] + ": " + recived_msg[1] + '\n')
