@@ -449,6 +449,41 @@ def recive():
                 for user in recived_msg[1]:
                     user_list.insert(tkinter.END, user)
             
+            if prefix == 'h':  #List of online members
+                history_object = recived_msg[1]
+                for message in history_object:
+                    if message[0] == 'm':
+                        wrapper = textwrap.TextWrapper(width=50)
+
+                        formated_msg = wrapper.wrap(text=message[1])
+
+                        i=0
+                        print(formated_msg)
+                        for line in formated_msg:
+                            if i == 0: #Only show name on first line
+                    
+                                msg_list.insert(tkinter.END, message[2] + ': ' + line + '\n')
+                                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                                msg_list.tag_add("hilight-" + message[2], current_line + ".0", current_line + "." + str(len(message[2]))) #Hilight the username
+                                msg_list.tag_config("hilight-" + message[2], foreground=message[3])
+                                top.update()
+
+                            else:
+                                msg_list.insert(tkinter.END, '|   ' + line + '\n')
+
+                            i+=1
+                            msg_list.yview(tkinter.END)
+                    if message[0] == 'd':
+                        msg_list.insert(tkinter.END, "[DM] " + message[2] + ": " + message[1] + '\n')
+
+                        current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                        msg_list.tag_add("hilight-" + message[2], current_line + ".5", current_line + "." + str(len(message[2]) + 5)) #Hilight the username
+                        msg_list.tag_config("hilight-" + message[2], foreground=message[3])
+                        top.update()
+
+                        msg_list.yview(tkinter.END)
+
+            
             try:
                 if prefix in ['m'] and not recived_msg[2] == "disconnect":
                     
@@ -608,6 +643,14 @@ def on_start():
             clock_thread = threading.Thread(target=clock)
             clock_thread.start()
 
+
+            msg = ('h', '') #Get message history
+            message = pickle.dumps(msg)
+            msg_length = len(message)
+            send_length = str(msg_length).encode(FORMAT)
+            send_length += b' ' * (HEADER - len(send_length))
+            client.send(send_length)
+            client.send(message)
 
             msg = ('u', username, user_colour) #Send username and colour
             message = pickle.dumps(msg)

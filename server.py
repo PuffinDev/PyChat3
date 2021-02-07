@@ -29,6 +29,8 @@ valid_colours = ["green", "orange", "blue", "purple", "red", "turquoise", "red4"
 conn_usernames = {}
 online_users = []
 
+message_history = []
+
 admins = []
 banned = []
 
@@ -57,6 +59,7 @@ def write_config():
 
 def send_to_all(msg, user, colour):
     msg = ('m', msg, user, colour)
+    message_history.append(msg)
     for conn in connections:
         conn.send(pickle.dumps(msg))
 
@@ -168,6 +171,7 @@ def handle_client(conn, addr):
                 if prefix == 'd':
                     try:
                         send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
+                        message_history.append(('d', msg[2], usernames[addr], user_colours[addr]))
                     except:
                         conn.send(pickle.dumps(('r', "User does not exist.")))
 
@@ -177,6 +181,25 @@ def handle_client(conn, addr):
                         send(usernames[addr], ('r', 'Changed username colour to ' + msg[1]))
                     else:
                         send(usernames[addr], ('r', 'That is not a valid colour. type \'/colours\'.'))
+
+                if prefix == 'h': # WORK IN PROGRESS
+                    print("Sending history to client...")
+
+                    if len(message_history) < 15:
+                        number = len(message_history)
+                    else:
+                        number = 15
+                    
+                    history_object = []
+
+                    for i in range(number):
+                        if message_history[i][0] == 'm':
+                            history_object.append(message_history[i])
+                            print(message_history[i])
+
+                    history_object = tuple(history_object)
+
+                    send(usernames[addr], ('h', history_object))
                 
                 if is_command == False:
                     try:
