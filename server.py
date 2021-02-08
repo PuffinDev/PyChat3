@@ -135,7 +135,7 @@ def handle_client(conn, addr):
                         user_colours[addr] = msg[2] #set colour
                         print(usernames)
                         conn_usernames[username] = conn
-                        send(usernames[addr], ('r', "Username has been set to " + username))
+                        #send(usernames[addr], ('r', "Username has been set to " + username))
                         username_set = True
                         print("username set to " + username)
 
