@@ -482,6 +482,12 @@ def recive():
                         top.update()
 
                         msg_list.yview(tkinter.END)
+                
+                msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_config("hilight_system", foreground="blue")
+                top.update()
 
             
             try:
@@ -629,13 +635,6 @@ def on_start():
             emoji_button = tkinter.Button(top, text="➡️", command=send_emoji)
             emoji_button.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])
             emoji_button.pack(side=tkinter.LEFT)
-
-            msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
-
-            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
-            msg_list.tag_config("hilight_system", foreground="blue")
-            top.update()
 
 
             rcv_thread = threading.Thread(target=recive)
