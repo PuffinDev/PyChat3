@@ -453,7 +453,13 @@ def recive():
                 history_object = recived_msg[1]
                 for message in history_object:
                     if message[0] == 'm':
+                        print(message)
                         if not message[1] == 'disconnect':
+                            
+                            message = list(message) #Make editable
+
+                            message[3] = 'grey11' #Set colour to black
+
                             wrapper = textwrap.TextWrapper(width=50)
 
                             formated_msg = wrapper.wrap(text=message[1])
@@ -483,6 +489,8 @@ def recive():
                         top.update()
 
                         msg_list.yview(tkinter.END)
+
+                msg_list.insert(tkinter.END, '--------------------------------------------CURRENT--------------------------------------------------\n')
                 
                 msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
