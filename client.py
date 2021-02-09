@@ -9,6 +9,7 @@ import time
 import json
 import random
 import textwrap
+import webbrowser #For /discord command
 
 running = True
 
@@ -314,6 +315,10 @@ def send(msg):  #takes in a string from entry field3.
             msg_list.yview(tkinter.END)
             msg = ('d', member, message)
 
+
+    elif msg[1:8] == 'discord':
+        webbrowser.open("https://discord.gg/nmza5KPfQb")
+
     elif msg[1:5] == 'help':
         msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
         msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user" + '\n')
@@ -324,6 +329,7 @@ def send(msg):  #takes in a string from entry field3.
         msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server" + '\n')
         msg_list.insert(tkinter.END, "• /colour [colour name]  - Set your username to a colour" + '\n')
         msg_list.insert(tkinter.END, "• /colours - List all username colours" + '\n')
+        msg_list.insert(tkinter.END, "• /discord - Join the official discord server!" + '\n')
         msg_list.yview(tkinter.END)
         return 0
 
