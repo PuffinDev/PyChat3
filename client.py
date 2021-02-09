@@ -102,7 +102,7 @@ top.title('PyChat')
 top.resizable(False, False)
 top.configure(bg=theme[0])
 
-font = tkFont.Font(family="System",size=11)
+font = tkFont.Font(family="Courier New",size=11)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 
@@ -490,7 +490,7 @@ def recive():
 
                         msg_list.yview(tkinter.END)
 
-                msg_list.insert(tkinter.END, '--------------------------------------------CURRENT--------------------------------------------------\n')
+                msg_list.insert(tkinter.END, '--------------------------CURRENT--------------------------\n')
                 
                 msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
