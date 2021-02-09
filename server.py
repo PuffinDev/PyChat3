@@ -150,6 +150,7 @@ def handle_client(conn, addr):
                             send(usernames[addr], ('r', 'User does not exist'))
 
                     else:
+                        print(addr[0])
                         send(usernames[addr], ('r', 'You are not an admin!'))
                         print("Not admin")
                         print(admins)
