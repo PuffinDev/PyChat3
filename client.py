@@ -460,7 +460,7 @@ def recive():
 
                             message[3] = 'grey11' #Set colour to black
 
-                            wrapper = textwrap.TextWrapper(width=50)
+                            wrapper = textwrap.TextWrapper(width=44)
 
                             formated_msg = wrapper.wrap(text=message[1])
 
@@ -502,7 +502,7 @@ def recive():
             try:
                 if prefix in ['m'] and not recived_msg[2] == "disconnect":
                     
-                    wrapper = textwrap.TextWrapper(width=50)
+                    wrapper = textwrap.TextWrapper(width=44)
 
                     formated_msg = wrapper.wrap(text=recived_msg[1])
 
