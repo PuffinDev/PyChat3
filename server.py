@@ -249,14 +249,15 @@ def handle_client(conn, addr):
         except socket.timeout: #timeout
             connected = False #Disconnect if failed to recive header
             print("Timeout")
-
-
-    online_users.remove(usernames[addr])
-    connections.remove(conn) #Remove from connections list
+    try:
+        online_users.remove(usernames[addr])
+    except: pass
+    try: 
+        connections.remove(conn) #Remove from connections list
+    except: pass
     try:
         del conn_usernames[usernames[addr]]
-    except:
-        pass
+    except: pass
     send_object_to_all(('l', usernames[addr]))
     try:
         del usernames[addr]
