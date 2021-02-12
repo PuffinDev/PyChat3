@@ -302,7 +302,7 @@ def send(msg):  #takes in a string from entry field3.
             msg_list.insert(tkinter.END, "[DM] You --> " + username + ": " + message + '\n')
             
             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(len(username) + 5)) #Hilight the username
+            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + 3 + 5)) #Hilight the username
             msg_list.tag_config("hilight-" + username, foreground=user_colour)
             top.update()
 
