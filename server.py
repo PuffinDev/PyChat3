@@ -245,7 +245,7 @@ def handle_client(conn, addr):
                     if prefix == 'd':
                         try:
                             send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
-                            message_history.append(('d', msg[2], usernames[addr], user_colours[addr]))
+                            message_history.append(('d', msg[1], msg[2], usernames[addr]))
                         except:
                             connsend(conn, ('r', "User does not exist."))
 
@@ -256,7 +256,7 @@ def handle_client(conn, addr):
                         else:
                             send(usernames[addr], ('r', 'That is not a valid colour. type \'/colours\'.'))
 
-                    if prefix == 'h': # WORK IN PROGRESS
+                    if prefix == 'h': #Send message history to client
                         print("Sending history to client...")
                         
                         history_object = []
@@ -269,6 +269,8 @@ def handle_client(conn, addr):
                             if message[0] == 'm':
                                 history_object.append(message)
                                 print(message)
+                            if message[0] == 'd' and message[1] == usernames[addr]:
+                                history_object.append(message)
                         
                         history_object = reversed(history_object)
                         history_object = tuple(history_object)

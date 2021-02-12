@@ -272,6 +272,8 @@ def send(msg):  #takes in a string from entry field3.
     elif msg[1:8] == 'sendobj':
         obj = msg[9:len(msg)]
         msg = eval(obj)
+
+    elif msg[1:3] == 'dm':
         whole = msg[4:len(msg)]
         print(whole)
         i=0
@@ -297,7 +299,7 @@ def send(msg):  #takes in a string from entry field3.
         else:
             message = whole[from_char:len(whole)]
 
-            msg_list.insert(tkinter.END, "[DM] " + username + ": " + message + '\n')
+            msg_list.insert(tkinter.END, "[DM] You --> " + username + ": " + message + '\n')
             
             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
             msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(len(username) + 5)) #Hilight the username
@@ -492,7 +494,7 @@ def recive():
                                 i+=1
                                 msg_list.yview(tkinter.END)
                     if message[0] == 'd':
-                        line_text +=  "[DM] " + message[2] + ": " + message[1] + '\n'
+                        line_text +=  "[DM] " + message[3] + ": " + message[2] + '\n'
                         line_count += 1
 
                         top.update()
