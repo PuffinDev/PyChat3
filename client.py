@@ -370,9 +370,20 @@ def recive():
     while running:
         #recive messages
         try:
-            recived_msg = pickle.loads(client.recv(2048))
-            print(recived_msg)
-            timeout = False
+            msg_length = client.recv(HEADER).decode(FORMAT)
+
+            if msg_length:
+                msg_length = int(msg_length)
+            
+                try:
+                    msg = client.recv(msg_length)
+                except:
+                    connected = False
+
+                recived_msg = pickle.loads(msg)
+                print(recived_msg)
+                timeout = False
+    
         except EOFError: #If server is not responding
             if running:
                 tkinter.messagebox.showinfo("Info","Server closed.")

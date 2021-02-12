@@ -60,16 +60,46 @@ def write_config():
 def send_to_all(msg, user, colour):
     msg = ('m', msg, user, colour)
     message_history.append(msg)
+
+    message = pickle.dumps(msg)
+    msg_length = len(message)
+    send_length = str(msg_length).encode(FORMAT)
+    send_length += b' ' * (HEADER - len(send_length))
+    
     for conn in connections:
-        conn.send(pickle.dumps(msg))
+        conn.send(send_length)
+        conn.send(message)
+
 
 def send_object_to_all(object):
+    message = pickle.dumps(object)
+    msg_length = len(message)
+    send_length = str(msg_length).encode(FORMAT)
+    send_length += b' ' * (HEADER - len(send_length))
+
     for conn in connections:
-        conn.send(pickle.dumps(object))
+        conn.send(send_length)
+        conn.send(message)
 
 def send(user, msg):
     conn = conn_usernames[user] # Get connection object from conn_usernames
-    conn.send(pickle.dumps(msg))
+
+    message = pickle.dumps(msg)
+    msg_length = len(message)
+    send_length = str(msg_length).encode(FORMAT)
+    send_length += b' ' * (HEADER - len(send_length))
+
+    conn.send(send_length)
+    conn.send(message)
+
+def connsend(conn, msg):
+    message = pickle.dumps(msg)
+    msg_length = len(message)
+    send_length = str(msg_length).encode(FORMAT)
+    send_length += b' ' * (HEADER - len(send_length))
+
+    conn.send(send_length)
+    conn.send(message)
 
 
 def handle_client(conn, addr):
@@ -79,7 +109,7 @@ def handle_client(conn, addr):
     conn_usernames[usernames[addr]] = conn
 
     if addr[0] in banned:
-        conn.send(pickle.dumps(('x')))
+        connsend(conn, ('x'))
         return 0
     else:
         print(f"[NEW CONNECTION] {addr} connected.")
@@ -88,7 +118,7 @@ def handle_client(conn, addr):
     username_set = False
     join_message_sent = False
 
-    conn.send(pickle.dumps(('o', online_users)))
+    connsend(conn, ('o', online_users))
 
 
     while connected:
@@ -174,7 +204,7 @@ def handle_client(conn, addr):
                         send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
                         message_history.append(('d', msg[2], usernames[addr], user_colours[addr]))
                     except:
-                        conn.send(pickle.dumps(('r', "User does not exist.")))
+                        connsend(conn, ('r', "User does not exist."))
 
                 if prefix == 'c':
                     if msg[1] in valid_colours:
