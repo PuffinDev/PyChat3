@@ -272,15 +272,6 @@ def send(msg):  #takes in a string from entry field3.
     elif msg[1:8] == 'sendobj':
         obj = msg[9:len(msg)]
         msg = eval(obj)
-
-    elif msg[1:4] == 'ban':
-        member = msg[5:len(msg)]
-        msg = ('b', member)
-    elif msg[1:6] == 'unban':
-        member = msg[7:len(msg)]
-        msg = ('a', member)
-
-    elif msg[1:3] == 'dm':
         whole = msg[4:len(msg)]
         print(whole)
         i=0
@@ -450,8 +441,8 @@ def recive():
                 msg_list.insert(tkinter.END, "> " + recived_msg[1] + " " + join_messages[random.randint(0, len(join_messages) - 1)] + '\n')
                 
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                msg_list.tag_add("hilight-" + recived_msg[1], current_line + ".2", current_line + "." + str(len(recived_msg[1]) + 2)) #Hilight the username
-                msg_list.tag_config("hilight-" + recived_msg[1], foreground=recived_msg[2])
+                msg_list.tag_add("hilight-" + recived_msg[2], current_line + ".2", current_line + "." + str(len(recived_msg[1]) + 2)) #Hilight the username
+                msg_list.tag_config("hilight-" + recived_msg[2], foreground=recived_msg[2])
                 top.update()
 
                 msg_list.yview(tkinter.END)
@@ -469,46 +460,47 @@ def recive():
             
             if prefix == 'h':  #List of online members
                 history_object = recived_msg[1]
+                line_text = ""
+                line_count = 0
+
                 for message in history_object:
+                    
+
                     if message[0] == 'm':
                         print(message)
                         if not message[1] == 'disconnect':
                             
                             message = list(message) #Make editable
 
-                            message[3] = 'grey11' #Set colour to black
-
                             wrapper = textwrap.TextWrapper(width=44)
 
                             formated_msg = wrapper.wrap(text=message[1])
 
                             i=0
-                            print(formated_msg)
+
                             for line in formated_msg:
                                 if i == 0: #Only show name on first line
                         
-                                    msg_list.insert(tkinter.END, message[2] + ': ' + line + '\n')
-                                    current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                                    msg_list.tag_add("hilight-" + message[2], current_line + ".0", current_line + "." + str(len(message[2]))) #Hilight the username
-                                    msg_list.tag_config("hilight-" + message[2], foreground=message[3])
+                                    line_text += message[2] + ': ' + line + '\n'
+                                    line_count += 1
                                     top.update()
 
                                 else:
-                                    msg_list.insert(tkinter.END, '|   ' + line + '\n')
+                                    line_text +=  '|   ' + line + '\n'
+                                    line_count += 1
 
                                 i+=1
                                 msg_list.yview(tkinter.END)
                     if message[0] == 'd':
-                        msg_list.insert(tkinter.END, "[DM] " + message[2] + ": " + message[1] + '\n')
+                        line_text +=  "[DM] " + message[2] + ": " + message[1] + '\n'
+                        line_count += 1
 
-                        current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                        msg_list.tag_add("hilight-" + message[2], current_line + ".5", current_line + "." + str(len(message[2]) + 5)) #Hilight the username
-                        msg_list.tag_config("hilight-" + message[2], foreground=message[3])
                         top.update()
 
                         msg_list.yview(tkinter.END)
 
-                msg_list.insert(tkinter.END, '--------------------------CURRENT--------------------------\n')
+                msg_list.insert('1.0', line_text)
+                msg_list.insert(str(line_count+1) + '.0', '--------------------------CURRENT--------------------------\n')
                 
                 msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
@@ -670,7 +662,7 @@ def on_start():
             clock_thread.start()
 
 
-            msg = ('h', '') #Get message history
+            msg = ('u', username, password, user_colour) #Send username and colour
             message = pickle.dumps(msg)
             msg_length = len(message)
             send_length = str(msg_length).encode(FORMAT)
@@ -678,7 +670,7 @@ def on_start():
             client.send(send_length)
             client.send(message)
 
-            msg = ('u', username, password, user_colour) #Send username and colour
+            msg = ('h', '') #Get message history
             message = pickle.dumps(msg)
             msg_length = len(message)
             send_length = str(msg_length).encode(FORMAT)
