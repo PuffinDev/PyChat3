@@ -501,10 +501,10 @@ def recive():
 
                 msg_list.insert('1.0', line_text)
                 msg_list.insert(str(line_count+1) + '.0', '--------------------------CURRENT--------------------------\n')
-                
-                msg_list.insert(tkinter.END, "[SYSTEM] Welcome to PyChat! Type /help to list commands\n")
+                msg_list.insert(str(line_count+2) + '.0', '[SYSTEM] Welcome to PyChat! Type /help to list commands\n')
+
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_add("hilight_system", str(line_count+2) + ".0", str(line_count+2) + "." + "8") #Hilight [SYSTEM]
                 msg_list.tag_config("hilight_system", foreground="blue")
                 top.update()
 
