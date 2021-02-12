@@ -3,6 +3,7 @@ import threading
 import pickle
 import time
 import traceback
+import json
 
 HEADER = 64
 PORT = input("Type a port >> ")
@@ -33,6 +34,22 @@ message_history = []
 
 admins = []
 banned = []
+accounts = {}
+
+def load_accounts():
+    global accounts
+
+    with open('resources/server/accounts.json', 'r') as file:
+        accounts = json.load(file)
+
+def save_accounts():
+    global accounts
+
+    with open('resources/server/accounts.json', 'w') as file:
+        json.dump(accounts, file)
+
+load_accounts()
+
 
 def addr_from_username(user):
     for key, value in usernames.items():
@@ -155,8 +172,32 @@ def handle_client(conn, addr):
 
                 if prefix == 'u':
                     username = msg[1].replace(' ', '')
+                    password = msg[2]
 
-                    if msg[1] in usernames.values():
+                    print(accounts)
+                    if username in accounts.keys():
+                        if accounts[username] == password:
+                            username_set = True
+                            connsend(conn, ('r', 'Logged in as ' + username))
+
+                            usernames[addr] = username #set username
+                            user_colours[addr] = msg[3] #set colour
+                            conn_usernames[username] = conn
+
+                        else: connsend(conn, ('r', 'Incorrect password.'))
+                    else:
+                        accounts[username] = password
+                        username_set = True
+                        connsend(conn, ('r', 'New account created: ' + username))
+                        save_accounts() #save new account in accounts.json
+
+                        usernames[addr] = username #set username
+                        user_colours[addr] = msg[3] #set colour
+                        conn_usernames[username] = conn
+                        
+
+                    
+                    """if msg[1] in usernames.values():
                         time.sleep(0.5)
                         send(usernames[addr], ('r', "That username is taken. please choose another."))
                         print("username taken")
@@ -167,80 +208,82 @@ def handle_client(conn, addr):
                         conn_usernames[username] = conn
                         #send(usernames[addr], ('r', "Username has been set to " + username))
                         username_set = True
-                        print("username set to " + username)
+                        print("username set to " + username)"""
 
-                if prefix == 'b': #ban
-                    if addr[0] in admins:
+                if username_set: #Only able to send messages if logged in
+
+                    if prefix == 'b': #ban
+                        if addr[0] in admins:
+                            try:
+                                banned.append(addr_from_username(msg[1]))
+                                write_config()
+                                send(msg[1], ('x')) #x command: disconnects client
+                                send(usernames[addr], ('r', 'User banned successfully!'))
+                            except:
+                                send(usernames[addr], ('r', 'User does not exist'))
+
+                        else:
+                            print(addr[0])
+                            send(usernames[addr], ('r', 'You are not an admin!'))
+                            print("Not admin")
+                            print(admins)
+                            print(addr[0])
+
+                    if prefix == 'a': #unban
+                        if addr[0] in admins:
+                            try:
+                                banned.remove(addr_from_username(msg[1]))
+                                write_config()
+                                send(usernames[addr], ('r', 'User unbanned successfully!'))
+                            except:
+                                send(usernames[addr], ('r', 'User is not banned!'))
+                                send(usernames[addr], ('r', addr_from_username(msg[1])))
+                            
+                        else:
+                            send(usernames[addr], ('r', 'You are not an admin!'))
+
+                    if prefix == 'd':
                         try:
-                            banned.append(addr_from_username(msg[1]))
-                            write_config()
-                            send(msg[1], ('x')) #x command: disconnects client
-                            send(usernames[addr], ('r', 'User banned successfully!'))
+                            send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
+                            message_history.append(('d', msg[2], usernames[addr], user_colours[addr]))
                         except:
-                            send(usernames[addr], ('r', 'User does not exist'))
+                            connsend(conn, ('r', "User does not exist."))
 
-                    else:
-                        print(addr[0])
-                        send(usernames[addr], ('r', 'You are not an admin!'))
-                        print("Not admin")
-                        print(admins)
-                        print(addr[0])
+                    if prefix == 'c':
+                        if msg[1] in valid_colours:
+                            user_colours[addr] = msg[1]
+                            send(usernames[addr], ('r', 'Changed username colour to ' + msg[1]))
+                        else:
+                            send(usernames[addr], ('r', 'That is not a valid colour. type \'/colours\'.'))
 
-                if prefix == 'a': #unban
-                    if addr[0] in admins:
-                        try:
-                            banned.remove(addr_from_username(msg[1]))
-                            write_config()
-                            send(usernames[addr], ('r', 'User unbanned successfully!'))
-                        except:
-                            send(usernames[addr], ('r', 'User is not banned!'))
-                            send(usernames[addr], ('r', addr_from_username(msg[1])))
+                    if prefix == 'h': # WORK IN PROGRESS
+                        print("Sending history to client...")
                         
-                    else:
-                        send(usernames[addr], ('r', 'You are not an admin!'))
+                        history_object = []
 
-                if prefix == 'd':
-                    try:
-                        send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
-                        message_history.append(('d', msg[2], usernames[addr], user_colours[addr]))
-                    except:
-                        connsend(conn, ('r', "User does not exist."))
+                        i=0
+                        for message in message_history[::-1]:
+                            i+=1
+                            if i==16:
+                                break
+                            if message[0] == 'm':
+                                history_object.append(message)
+                                print(message)
+                        
+                        history_object = reversed(history_object)
+                        history_object = tuple(history_object)
 
-                if prefix == 'c':
-                    if msg[1] in valid_colours:
-                        user_colours[addr] = msg[1]
-                        send(usernames[addr], ('r', 'Changed username colour to ' + msg[1]))
-                    else:
-                        send(usernames[addr], ('r', 'That is not a valid colour. type \'/colours\'.'))
-
-                if prefix == 'h': # WORK IN PROGRESS
-                    print("Sending history to client...")
+                        send(usernames[addr], ('h', history_object))
                     
-                    history_object = []
+                    if is_command == False:
+                        try:
+                            send_to_all(msg[1], usernames[addr], user_colours[addr])
+                        except KeyError:
+                            usernames[addr] = threading.activeCount() - 1
+                            send_to_all(msg[1], usernames[addr], "red")
 
-                    i=0
-                    for message in message_history[::-1]:
-                        i+=1
-                        if i==16:
-                            break
-                        if message[0] == 'm':
-                            history_object.append(message)
-                            print(message)
-                    
-                    history_object = reversed(history_object)
-                    history_object = tuple(history_object)
-
-                    send(usernames[addr], ('h', history_object))
-                
-                if is_command == False:
-                    try:
-                        send_to_all(msg[1], usernames[addr], user_colours[addr])
-                    except KeyError:
-                        usernames[addr] = threading.activeCount() - 1
-                        send_to_all(msg[1], usernames[addr], "red")
-
-                if not prefix == 'k':
-                    print(f"[{str(addr).strip('(').strip(')')}] {msg}")
+                    if not prefix == 'k':
+                        print(f"[{str(addr).strip('(').strip(')')}] {msg}")
 
             else: #Disconnect client if header is blank
                 print("Blank header")
@@ -261,8 +304,7 @@ def handle_client(conn, addr):
     send_object_to_all(('l', usernames[addr]))
     try:
         del usernames[addr]
-    except:
-        pass
+    except: pass
     time.sleep(0.5)
     conn.close()
     print("Closed connection.")

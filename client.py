@@ -106,6 +106,7 @@ top.configure(bg=theme[0])
 font = tkFont.Font(family="Courier New",size=11)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
+password = tkinter.simpledialog.askstring("Password", "Type your password")
 
 space = tkinter.Label(bg=theme[0])
 space2 = tkinter.Label(bg=theme[0])
@@ -677,7 +678,7 @@ def on_start():
             client.send(send_length)
             client.send(message)
 
-            msg = ('u', username, user_colour) #Send username and colour
+            msg = ('u', username, password, user_colour) #Send username and colour
             message = pickle.dumps(msg)
             msg_length = len(message)
             send_length = str(msg_length).encode(FORMAT)
