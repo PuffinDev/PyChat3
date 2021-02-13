@@ -299,10 +299,10 @@ def send(msg):  #takes in a string from entry field3.
         else:
             message = whole[from_char:len(whole)]
 
-            msg_list.insert(tkinter.END, "[DM] You --> " + username + ": " + message + '\n')
+            msg_list.insert(tkinter.END, "[DM] You --> " + member + ": " + message + '\n')
             
             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + 3 + 5)) #Hilight the username
+            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(3 + 5)) #Hilight the username
             msg_list.tag_config("hilight-" + username, foreground=user_colour)
             top.update()
 
@@ -493,9 +493,14 @@ def recive():
 
                                 i+=1
                                 msg_list.yview(tkinter.END)
+                    
                     if message[0] == 'd':
-                        line_text +=  "[DM] " + message[3] + ": " + message[2] + '\n'
-                        line_count += 1
+                        if message[3] == username:
+                            line_text += "[DM] You --> " + message[1] + ": " + message[2] + '\n'
+                            line_count += 1
+                        elif message[1] == username:
+                            line_text +=  "[DM] " + message[3] + ": " + message[2] + '\n'
+                            line_count += 1
 
                         top.update()
 

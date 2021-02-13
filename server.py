@@ -271,6 +271,8 @@ def handle_client(conn, addr):
                                 print(message)
                             if message[0] == 'd' and message[1] == usernames[addr]:
                                 history_object.append(message)
+                            if message[0] == 'd' and message[3] == usernames[addr]:
+                                history_object.append(message)
                         
                         history_object = reversed(history_object)
                         history_object = tuple(history_object)
