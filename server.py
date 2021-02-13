@@ -292,8 +292,6 @@ def handle_client(conn, addr):
                                 inbox_object.append(message)
                             if message[0] == 'd' and message[1] == usernames[addr]:
                                 inbox_object.append(message)
-                            if message[0] == 'd' and message[3] == usernames[addr]:
-                                inbox_object.append(message)
 
                         inbox_object = reversed(inbox_object)
                         inbox_object = tuple(inbox_object)
