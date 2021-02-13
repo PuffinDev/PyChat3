@@ -167,8 +167,10 @@ def handle_client(conn, addr):
                 else:
                     is_command = True
 
-                if msg[1] == DISCONNECT_MESSAGE:
-                    connected = False
+                try:
+                    if msg[1] == DISCONNECT_MESSAGE:
+                        connected = False
+                except: pass
 
                 if prefix == 'u':
                     username = msg[1].replace(' ', '')
@@ -268,7 +270,6 @@ def handle_client(conn, addr):
                                 break
                             if message[0] == 'm':
                                 history_object.append(message)
-                                print(message)
                             if message[0] == 'd' and message[1] == usernames[addr]:
                                 history_object.append(message)
                             if message[0] == 'd' and message[3] == usernames[addr]:
@@ -279,6 +280,26 @@ def handle_client(conn, addr):
 
                         send(usernames[addr], ('h', history_object))
                     
+                    if prefix == 'i': #Inbox
+                        inbox_object = []
+
+                        i=0
+                        for message in message_history[::-1]:
+                            i+=1
+                            if i==20:
+                                break
+                            if message[0] == 'm' and '@' + usernames[addr] in message[1]: #If @username in message
+                                inbox_object.append(message)
+                            if message[0] == 'd' and message[1] == usernames[addr]:
+                                inbox_object.append(message)
+                            if message[0] == 'd' and message[3] == usernames[addr]:
+                                inbox_object.append(message)
+
+                        inbox_object = reversed(inbox_object)
+                        inbox_object = tuple(inbox_object)
+
+                        send(usernames[addr], ('i', inbox_object))
+
                     if is_command == False:
                         try:
                             send_to_all(msg[1], usernames[addr], user_colours[addr])

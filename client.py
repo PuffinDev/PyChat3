@@ -112,9 +112,6 @@ space = tkinter.Label(bg=theme[0])
 space2 = tkinter.Label(bg=theme[0])
 space3 = tkinter.Label(bg=theme[0])
 
-v = tkinter.IntVar()
-v.set(1)
-
 def set_official_server():
     server_entry.delete(0, 'end')
     port_entry.delete(0, 'end')
@@ -126,7 +123,7 @@ def set_custom_server():
     port_entry.delete(0, 'end')
 
 
-
+v = tkinter.IntVar(); v.set(1)
 custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=101, command=set_custom_server, bg=theme[0], highlightthickness=0)
 default_server = tkinter.Radiobutton(text="Official server ", variable=v, value=102, command=set_official_server, bg=theme[0], highlightthickness=0)
 server_label = tkinter.Label(text="Server adress")
@@ -309,6 +306,8 @@ def send(msg):  #takes in a string from entry field3.
             msg_list.yview(tkinter.END)
             msg = ('d', member, message)
 
+    elif msg[1:6] == 'inbox':
+        msg = ('i')
 
     elif msg[1:8] == 'discord':
         webbrowser.open("https://discord.gg/nmza5KPfQb")
@@ -316,6 +315,7 @@ def send(msg):  #takes in a string from entry field3.
     elif msg[1:5] == 'help':
         msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
         msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user" + '\n')
+        msg_list.insert(tkinter.END, "• /inbox - View your inbox")
         msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme" + '\n')
         msg_list.insert(tkinter.END, "• /themes  - List theme names" + '\n')
         msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds" + '\n')
@@ -460,7 +460,7 @@ def recive():
                 for user in recived_msg[1]:
                     user_list.insert(tkinter.END, user)
             
-            if prefix == 'h':  #List of online members
+            if prefix == 'h':  #Message history
                 history_object = recived_msg[1]
                 line_text = ""
                 line_count = 0
@@ -514,6 +514,56 @@ def recive():
                 msg_list.tag_add("hilight_system", str(line_count+2) + ".0", str(line_count+2) + "." + "8") #Hilight [SYSTEM]
                 msg_list.tag_config("hilight_system", foreground="blue")
                 top.update()
+
+            if prefix == 'i':  #Inbox (DM and @mention history)
+                inbox_object = recived_msg[1]
+                line_text = []
+                line_count = 0
+
+                for message in inbox_object:
+                    if message[0] == 'm':  
+                        message = list(message) #Make editable
+
+                        wrapper = textwrap.TextWrapper(width=44)
+
+                        formated_msg = wrapper.wrap(text=message[1])
+
+                        i=0
+
+                        for line in formated_msg:
+                            if i == 0: #Only show name on first line
+                    
+                                line_text.append(message[2] + ': ' + line)
+                                line_count += 1
+                                top.update()
+
+                            else:
+                                line_text.append('|   ' + line)
+                                line_count += 1
+
+                            i+=1
+                            msg_list.yview(tkinter.END)
+                    
+                    if message[0] == 'd':
+                        if message[3] == username:
+                            line_text.append("[DM] You --> " + message[1] + ": " + message[2])
+                            line_count += 1
+                        elif message[1] == username:
+                            line_text.append("[DM] " + message[3] + ": " + message[2])
+                            line_count += 1
+
+                        top.update()
+
+                        msg_list.yview(tkinter.END)
+
+                inbox_window = tkinter.Toplevel(top)
+                inbox_window.title(username + "'s inbox")
+                inbox_list = tkinter.Listbox(inbox_window, height=16, width=60)
+                inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
+                inbox_list.pack()
+
+                for line in line_text:
+                    inbox_list.insert(tkinter.END, line)
 
             
             try:
