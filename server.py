@@ -4,6 +4,7 @@ import pickle
 import time
 import traceback
 import json
+import mysql.connector
 
 HEADER = 64
 PORT = input("Type a port >> ")
@@ -36,17 +37,52 @@ admins = []
 banned = []
 accounts = {}
 
+def database():
+    db = mysql.connector.connect(
+        host="remotemysql.com",
+        username="v07CkEd0n9",
+        password="EVHzoZ6pSx",
+        database="v07CkEd0n9"
+    )
+    return db
+
 def load_accounts():
+    global g
+
+    conndb = database()
+    cursor = conndb.cursor()
+    cursor.execute("SELECT * FROM accounts")
+    g = cursor.fetchall()
+    print(g)
+    conndb.close()
+    #g[0] contains username, g[1] contains password
+
+    # with open('resources/server/accounts.json', 'r') as file:
+    #     accounts = json.load(file)
+
+def load_single_account(username):
+    conndb = database()
+    cursor = conndb.cursor()
+    cursor.execute("SELECT * FROM accounts WHERE username=%s", (username, ))
+    lol = cursor.fetchone()
+    conndb.close()
+    print(lol)
+    return lol
+    #lol[0] is username and lol[1] is password.
+
+def save_accounts(username, password):
     global accounts
 
-    with open('resources/server/accounts.json', 'r') as file:
-        accounts = json.load(file)
+    conndb = database()
+    cursor = conndb.cursor()
+    cursor.execute("INSERT INTO accounts(username, password) VALUES(%s, %s)", (username, password))
+    print(username)
+    print(password)
+    conndb.commit()
+    conndb.close()
 
-def save_accounts():
-    global accounts
-
-    with open('resources/server/accounts.json', 'w') as file:
-        json.dump(accounts, file)
+    # with open('resources/server/accounts.json', 'w') as file:
+    #     json.dump(accounts, file)
 
 load_accounts()
 
@@ -167,18 +203,19 @@ def handle_client(conn, addr):
                 else:
                     is_command = True
 
-                try:
-                    if msg[1] == DISCONNECT_MESSAGE:
-                        connected = False
-                except: pass
+                if msg[1] == DISCONNECT_MESSAGE:
+                    connected = False
 
                 if prefix == 'u':
                     username = msg[1].replace(' ', '')
                     password = msg[2]
 
-                    print(accounts)
-                    if username in accounts.keys():
-                        if accounts[username] == password:
+                    print(g)
+                    #if username in accounts.keys():
+                    accountdata = load_single_account(username)
+                    print(accountdata)
+                    try:
+                        if accountdata[1] == password:
                             username_set = True
                             connsend(conn, ('r', 'Logged in as ' + username))
 
@@ -186,12 +223,12 @@ def handle_client(conn, addr):
                             user_colours[addr] = msg[3] #set colour
                             conn_usernames[username] = conn
 
-                        else: connsend(conn, ('r', 'Incorrect password.'))
-                    else:
-                        accounts[username] = password
+                        else: 
+                            connsend(conn, ('r', 'Incorrect password.'))
+                    except:
                         username_set = True
                         connsend(conn, ('r', 'New account created: ' + username))
-                        save_accounts() #save new account in accounts.json
+                        save_accounts(username, password) #save new account in db
 
                         usernames[addr] = username #set username
                         user_colours[addr] = msg[3] #set colour
@@ -270,6 +307,7 @@ def handle_client(conn, addr):
                                 break
                             if message[0] == 'm':
                                 history_object.append(message)
+                                print(message)
                             if message[0] == 'd' and message[1] == usernames[addr]:
                                 history_object.append(message)
                             if message[0] == 'd' and message[3] == usernames[addr]:
@@ -280,24 +318,6 @@ def handle_client(conn, addr):
 
                         send(usernames[addr], ('h', history_object))
                     
-                    if prefix == 'i': #Inbox
-                        inbox_object = []
-
-                        i=0
-                        for message in message_history[::-1]:
-                            i+=1
-                            if i==20:
-                                break
-                            if message[0] == 'm' and '@' + usernames[addr] in message[1]: #If @username in message
-                                inbox_object.append(message)
-                            if message[0] == 'd' and message[1] == usernames[addr]:
-                                inbox_object.append(message)
-
-                        inbox_object = reversed(inbox_object)
-                        inbox_object = tuple(inbox_object)
-
-                        send(usernames[addr], ('i', inbox_object))
-
                     if is_command == False:
                         try:
                             send_to_all(msg[1], usernames[addr], user_colours[addr])
