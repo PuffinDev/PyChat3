@@ -520,6 +520,13 @@ def recive():
                 line_text = []
                 line_count = 0
 
+                inbox_window = tkinter.Toplevel(top)
+                inbox_window.title(username + "'s inbox")
+                inbox_list = tkinter.Text(inbox_window, height=16, width=60)
+                inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
+                inbox_list.bindtags((str(msg_list), str(top), "all"))
+                inbox_list.pack()
+
                 for message in inbox_object:
                     if message[0] == 'm':  
                         message = list(message) #Make editable
@@ -533,37 +540,32 @@ def recive():
                         for line in formated_msg:
                             if i == 0: #Only show name on first line
                     
-                                line_text.append(message[2] + ': ' + line)
+                                inbox_list.insert(tkinter.END, message[2] + ': ' + line + '\n')
                                 line_count += 1
                                 top.update()
 
                             else:
-                                line_text.append('|   ' + line)
+                                inbox_list.insert(tkinter.END, '|   ' + line + '\n')
                                 line_count += 1
 
                             i+=1
                             msg_list.yview(tkinter.END)
                     
                     if message[0] == 'd':
-                        if message[3] == username:
-                            line_text.append("[DM] You --> " + message[1] + ": " + message[2])
+                        if message[1] == username:
+                            inbox_list.insert(tkinter.END, "[DM] " + message[3] + ": " + message[2] + '\n')
                             line_count += 1
-                        elif message[1] == username:
-                            line_text.append("[DM] " + message[3] + ": " + message[2])
-                            line_count += 1
+
+                            current_line = str(int(inbox_list.index('end').split('.')[0]) - 2)
+                            inbox_list.tag_add("hilight-" + recived_msg[2], current_line + ".5", current_line + "." + str(len(recived_msg[2]) + 5)) #Hilight the username
+                            inbox_list.tag_config("hilight-" + recived_msg[2], foreground=recived_msg[3])
+                            top.update()
+
 
                         top.update()
 
                         msg_list.yview(tkinter.END)
 
-                inbox_window = tkinter.Toplevel(top)
-                inbox_window.title(username + "'s inbox")
-                inbox_list = tkinter.Listbox(inbox_window, height=16, width=60)
-                inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
-                inbox_list.pack()
-
-                for line in line_text:
-                    inbox_list.insert(tkinter.END, line)
 
             
             try:
