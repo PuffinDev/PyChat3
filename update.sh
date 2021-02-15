@@ -17,4 +17,7 @@ mv ../admins.txt resources/server
 mv ../banned.txt resources/server 
 mv ../config.json resources/client
 
+cd ..
+cd PyChat
+
 echo PyChat is now updated!
