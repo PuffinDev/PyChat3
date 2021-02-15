@@ -285,13 +285,14 @@ def handle_client(conn, addr):
 
                         i=0
                         for message in message_history[::-1]:
-                            i+=1
                             if i==20:
                                 break
                             if message[0] == 'm' and '@' + usernames[addr] in message[1]: #If @username in message
                                 inbox_object.append(message)
+                                i+=1
                             if message[0] == 'd' and message[1] == usernames[addr]:
                                 inbox_object.append(message)
+                                i+=1
 
                         inbox_object = reversed(inbox_object)
                         inbox_object = tuple(inbox_object)
