@@ -247,9 +247,11 @@ def handle_client(conn, addr):
                     if prefix == 'd':
                         try:
                             send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
-                            message_history.append(('d', msg[1], msg[2], usernames[addr], user_colours[addr]))
-                        except:
-                            connsend(conn, ('r', "User does not exist."))
+                        except: 
+                            connsend(conn, ('r', "That user is not online, but your message has been sent to their inbox"))
+                            #If user is not online then message still gets added to the message history for if they come online
+
+                        message_history.append(('d', msg[1], msg[2], usernames[addr], user_colours[addr]))
 
                     if prefix == 'c':
                         if msg[1] in valid_colours:
