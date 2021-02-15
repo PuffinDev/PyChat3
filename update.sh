@@ -8,6 +8,7 @@ mv resources/client/config.json ..
 
 cd ..
 sudo rm -rf PyChat
+sudo rm -rf pychat
 git clone https://github.com/PuffinDev/PyChat.git
 cd PyChat
 
