@@ -30,6 +30,8 @@ python3 server.py
 
 python3 client.py
 
+Update your PyChat with:  **sudo bash update.sh** (in PyChat directory)
+
 # Known bugs
 
 - Sometimes the UI does not display properly on starting PyChat
