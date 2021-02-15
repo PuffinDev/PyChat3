@@ -10,6 +10,7 @@ import json
 import random
 import textwrap
 import webbrowser #For /discord command
+import hashlib
 
 running = True
 
@@ -107,6 +108,7 @@ font = tkFont.Font(family="Courier New",size=11)
 
 username = tkinter.simpledialog.askstring("Username", "Choose a username")
 password = tkinter.simpledialog.askstring("Password", "Type your password")
+password = hashlib.md5(password.encode(FORMAT)).hexdigest()
 
 space = tkinter.Label(bg=theme[0])
 space2 = tkinter.Label(bg=theme[0])
