@@ -247,7 +247,7 @@ def handle_client(conn, addr):
                     if prefix == 'd':
                         try:
                             send(msg[1], ('d', msg[2], usernames[addr], user_colours[addr]))
-                            message_history.append(('d', msg[1], msg[2], usernames[addr]))
+                            message_history.append(('d', msg[1], msg[2], usernames[addr], user_colours[addr]))
                         except:
                             connsend(conn, ('r', "User does not exist."))
 

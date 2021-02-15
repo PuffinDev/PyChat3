@@ -546,6 +546,10 @@ def recive():
                     
                                 inbox_list.insert(tkinter.END, message[2] + ': ' + line + '\n')
                                 line_count += 1
+
+                                current_line = str(int(inbox_list.index('end').split('.')[0]) - 2)
+                                inbox_list.tag_add("hilight-" + message[2], current_line + ".0", current_line + "." + str(len(message[2]))) #Hilight the username
+                                inbox_list.tag_config("hilight-" + message[2], foreground=message[3])
                                 top.update()
 
                             else:
@@ -561,8 +565,8 @@ def recive():
                             line_count += 1
 
                             current_line = str(int(inbox_list.index('end').split('.')[0]) - 2)
-                            inbox_list.tag_add("hilight-" + recived_msg[2], current_line + ".5", current_line + "." + str(len(recived_msg[2]) + 5)) #Hilight the username
-                            inbox_list.tag_config("hilight-" + recived_msg[2], foreground=recived_msg[3])
+                            inbox_list.tag_add("hilight-" + message[2], current_line + ".5", current_line + "." + str(len(message[3]) + 5)) #Hilight the username
+                            inbox_list.tag_config("hilight-" + message[2], foreground=message[4])
                             top.update()
 
 
