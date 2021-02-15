@@ -315,7 +315,7 @@ def send(msg):  #takes in a string from entry field3.
     elif msg[1:5] == 'help':
         msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
         msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user" + '\n')
-        msg_list.insert(tkinter.END, "• /inbox - View your inbox")
+        msg_list.insert(tkinter.END, "• /inbox - View your inbox" + '\n')
         msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme" + '\n')
         msg_list.insert(tkinter.END, "• /themes  - List theme names" + '\n')
         msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds" + '\n')
