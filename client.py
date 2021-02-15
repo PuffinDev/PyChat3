@@ -515,6 +515,8 @@ def recive():
                 msg_list.tag_config("hilight_system", foreground="blue")
                 top.update()
 
+                msg_list.yview(tkinter.END)
+
             if prefix == 'i':  #Inbox (DM and @mention history)
                 inbox_object = recived_msg[1]
                 line_text = []
