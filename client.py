@@ -178,6 +178,11 @@ def send(msg):  #takes in a string from entry field3.
     global entry_field
     global muted
     global theme_name
+    global theme
+
+    global inbox_window
+    global inbox_list
+    global refresh_button
 
     if msg == '': #Don't send if message is blank
         return 0
@@ -213,6 +218,14 @@ def send(msg):  #takes in a string from entry field3.
                 send_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
                 emoji_opt.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
                 emoji_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+
+                #Update inbox UI
+                try:
+                    inbox_window.configure(bg=theme[0])
+                    inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
+                    refresh_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+                except: pass  #If window is not open
+
                 msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)] + '\n')
 
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
@@ -380,6 +393,10 @@ def send(msg):  #takes in a string from entry field3.
         print("Exited send")
         return 0
 
+#Make inbox UI global
+inbox_window = None
+inbox_list = None
+refresh_button = None
 
 def recive():
     global muted
@@ -388,9 +405,14 @@ def recive():
     global running
     global colour_set
 
+    global inbox_list
+    global inbox_window
+    global refresh_button
+
     timeout = False
 
     while running:
+
         #recive messages
         try:
             msg_length = client.recv(HEADER).decode(FORMAT)
