@@ -103,7 +103,7 @@ def connect(server, port, username):
 
 
 top = tkinter.Tk()
-top.title('PyChat')
+top.title('PyChat login')
 top.resizable(False, False)
 top.configure(bg=theme[0])
 
@@ -165,20 +165,20 @@ def set_custom_server():
     server_entry.delete(0, 'end')
     port_entry.delete(0, 'end')
 
-
+top.title('Server selector')
 v = tkinter.IntVar(); v.set(1)
 custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=101, command=set_custom_server, bg=theme[0], highlightthickness=0)
 default_server = tkinter.Radiobutton(text="Official server ", variable=v, value=102, command=set_official_server, bg=theme[0], highlightthickness=0)
-server_label = tkinter.Label(text="Server adress")
-server_entry = tkinter.Entry()
-port_label = tkinter.Label(text="Port number")
-port_entry = tkinter.Entry()
+server_label = tkinter.Label(text="Server adress", bg=theme[1])
+server_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
+port_label = tkinter.Label(text="Port number", bg=theme[1])
+port_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
 
 def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()), username)
 port_entry.bind('<Return>', connect_to_current_server)
 server_entry.bind('<Return>', connect_to_current_server)
 
-connect_button = tkinter.Button(text="Connect!",bg=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
+connect_button = tkinter.Button(text="Connect!", bg=theme[1], activebackground=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
 
 custom_server.pack()
 default_server.pack()
@@ -191,8 +191,6 @@ port_entry.pack()
 space.pack()
 space3.pack()
 connect_button.pack()
-
-print("UI initialised")
 
 
 #handles close window event
@@ -780,6 +778,8 @@ def on_start():
 
             #Init UI
 
+            top.title('PyChat')
+
             messages_frame = tkinter.Frame(top)
             msg_list = tkinter.Text(messages_frame, height=20, width=70)
             msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
@@ -819,7 +819,8 @@ def on_start():
             emoji_button = tkinter.Button(top, text="➡️", command=send_emoji)
             emoji_button.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])
             emoji_button.pack(side=tkinter.LEFT)
-
+            
+            print("UI initialised")
 
             rcv_thread = threading.Thread(target=recive)
             rcv_thread.start()
