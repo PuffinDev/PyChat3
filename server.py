@@ -76,7 +76,9 @@ def write_config():
 
 def send_to_all(msg, user, colour):
     msg = ('m', msg, user, colour)
-    message_history.append(msg)
+    
+    if not msg[1] == 'disconnect': #Dont append disconnect messages
+        message_history.append(msg)
 
     message = pickle.dumps(msg)
     msg_length = len(message)
