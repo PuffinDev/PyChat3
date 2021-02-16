@@ -552,12 +552,21 @@ def recive():
                 line_count = 0
 
                 inbox_window = tkinter.Toplevel(top)
+                inbox_window.configure(bg=theme[0])
                 inbox_window.resizable(False, False)
                 inbox_window.title(username + "'s inbox")
                 inbox_list = tkinter.Text(inbox_window, height=20, width=60)
                 inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
                 inbox_list.bindtags((str(msg_list), str(top), "all"))
                 inbox_list.pack()
+
+                def refresh_inbox():
+                    inbox_window.destroy()
+                    send("/inbox") #Run command again to refresh
+
+                refresh_button = tkinter.Button(inbox_window, text="Refresh", command=refresh_inbox)
+                refresh_button.config(bg=theme[1], fg='black', highlightthickness=0, activebackground=theme[1])
+                refresh_button.pack(pady=3)
 
                 for message in inbox_object:
                     if message[0] == 'm':  
