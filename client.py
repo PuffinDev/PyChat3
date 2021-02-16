@@ -129,8 +129,8 @@ def login():
 var = tkinter.IntVar()
 username_label = tkinter.Label(text="Username", bg=theme[0])
 password_label = tkinter.Label(text="Password", bg=theme[0])
-username_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1)
-password_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1)
+username_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
+password_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center', show="#")
 ok_button = tkinter.Button(text="Ok", command=login, bg=theme[1], activebackground=theme[1])
 
 username_label.pack()
