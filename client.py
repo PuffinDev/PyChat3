@@ -138,6 +138,7 @@ port_entry = tkinter.Entry()
 
 def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()), username)
 port_entry.bind('<Return>', connect_to_current_server)
+server_entry.bind('<Return>', connect_to_current_server)
 
 connect_button = tkinter.Button(text="Connect!",bg=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
 
