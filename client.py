@@ -116,7 +116,7 @@ font = tkFont.Font(family="Courier New",size=11)
 username = None
 password = None
 
-def login():
+def login(*key):
     global username
     global password
 
@@ -132,6 +132,8 @@ password_label = tkinter.Label(text="Password", bg=theme[0])
 username_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
 password_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center', show="#")
 ok_button = tkinter.Button(text="Ok", command=login, bg=theme[1], activebackground=theme[1])
+username_entry.bind('<Return>', login)
+password_entry.bind('<Return>', login)
 
 username_label.pack()
 username_entry.pack()
