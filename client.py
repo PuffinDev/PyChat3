@@ -503,7 +503,7 @@ def recive():
                             
                             message = list(message) #Make editable
 
-                            wrapper = textwrap.TextWrapper(width=44)
+                            wrapper = textwrap.TextWrapper(width=52)
 
                             formated_msg = wrapper.wrap(text=message[1])
 
@@ -536,7 +536,7 @@ def recive():
                         msg_list.yview(tkinter.END)
 
                 msg_list.insert('1.0', line_text)
-                msg_list.insert(str(line_count+1) + '.0', '--------------------------CURRENT--------------------------\n')
+                msg_list.insert(str(line_count+1) + '.0', '-------------------------------CURRENT--------------------------------\n')
                 msg_list.insert(str(line_count+2) + '.0', '[SYSTEM] Welcome to PyChat! Type /help to list commands\n')
 
                 current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
@@ -553,7 +553,7 @@ def recive():
 
                 inbox_window = tkinter.Toplevel(top)
                 inbox_window.title(username + "'s inbox")
-                inbox_list = tkinter.Text(inbox_window, height=16, width=60)
+                inbox_list = tkinter.Text(inbox_window, height=20, width=60)
                 inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
                 inbox_list.bindtags((str(msg_list), str(top), "all"))
                 inbox_list.pack()
@@ -606,7 +606,7 @@ def recive():
             try:
                 if prefix in ['m'] and not recived_msg[2] == "disconnect":
                     
-                    wrapper = textwrap.TextWrapper(width=44)
+                    wrapper = textwrap.TextWrapper(width=52)
 
                     formated_msg = wrapper.wrap(text=recived_msg[1])
 
@@ -710,7 +710,7 @@ def on_start():
             #Init UI
 
             messages_frame = tkinter.Frame(top)
-            msg_list = tkinter.Text(messages_frame, height=16, width=60)
+            msg_list = tkinter.Text(messages_frame, height=20, width=70)
             msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
             msg_list.pack(side=tkinter.LEFT, fill=tkinter.BOTH)
             msg_list.bindtags((str(msg_list), str(top), "all"))
@@ -719,7 +719,7 @@ def on_start():
             messages_frame.pack()
 
             users_frame = tkinter.Frame(top)
-            user_list = tkinter.Listbox(messages_frame, height=15, width=15)
+            user_list = tkinter.Listbox(messages_frame, height=20, width=20)
             user_list.config(bg=theme[1])
             user_list.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
             user_list.pack()
