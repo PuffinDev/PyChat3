@@ -241,7 +241,25 @@ def send(msg):  #takes in a string from entry field3.
 
     if is_command: # Don't send if message is command
 
-        if msg[1:7] == 'theme ':
+        if msg[1:11] == 'disconnect':
+            msg_list.insert(tkinter.END, "[SYSTEM] Disconnecting... " + '\n')
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+            msg_list.yview(tkinter.END)
+
+            save_config() #Save theme, muted, etc.
+            if server_bound:
+                send(DISCONNECT_MESSAGE)
+            else:
+                pass
+            time.sleep(1)
+            running = False
+            top.destroy()
+            exit()
+
+        elif msg[1:7] == 'theme ':
             try:
                 theme = themes[msg[7:len(msg)]]
                 theme_name = msg[7:len(msg)]
