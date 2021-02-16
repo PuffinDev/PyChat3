@@ -552,6 +552,7 @@ def recive():
                 line_count = 0
 
                 inbox_window = tkinter.Toplevel(top)
+                inbox_window.resizable(False, False)
                 inbox_window.title(username + "'s inbox")
                 inbox_list = tkinter.Text(inbox_window, height=20, width=60)
                 inbox_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
