@@ -272,6 +272,14 @@ def send(msg):  #takes in a string from entry field3.
         obj = msg[9:len(msg)]
         msg = eval(obj)
 
+    elif msg[1:4] == 'ban':
+        member = msg[5:len(msg)]
+        msg = ('b', member)
+    elif msg[1:6] == 'unban':
+        member = msg[7:len(msg)]
+        msg = ('a', member)
+
+
     elif msg[1:3] == 'dm':
         whole = msg[4:len(msg)]
         print(whole)
