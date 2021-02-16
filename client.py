@@ -65,7 +65,7 @@ def save_config():
 HEADER = 64
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "disconnect"
-time.sleep(0.4)
+
 
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
 leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
@@ -74,7 +74,7 @@ commands = ['help', 'mute', 'unmute', 'dm', 'ban', 'unban', 'themes', 'theme', '
 
 server_bound = False
 
-client = ''
+client = None
 
 def connect(server, port, username):
     global server_bound
@@ -109,9 +109,45 @@ top.configure(bg=theme[0])
 
 font = tkFont.Font(family="Courier New",size=11)
 
-username = tkinter.simpledialog.askstring("Username", "Choose a username")
-password = tkinter.simpledialog.askstring("Password", "Type your password")
-password = hashlib.md5(password.encode(FORMAT)).hexdigest()
+
+#username = tkinter.simpledialog.askstring("Username", "Choose a username")
+#password = tkinter.simpledialog.askstring("Password", "Type your password")
+
+username = None
+password = None
+
+def login():
+    global username
+    global password
+
+    username = username_entry.get()
+    password = password_entry.get()
+    password = hashlib.md5(password.encode(FORMAT)).hexdigest()
+
+    var.set(1)
+
+var = tkinter.IntVar()
+username_label = tkinter.Label(text="Username", bg=theme[0])
+password_label = tkinter.Label(text="Password", bg=theme[0])
+username_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1)
+password_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1)
+ok_button = tkinter.Button(text="Ok", command=login, bg=theme[1], activebackground=theme[1])
+
+username_label.pack()
+username_entry.pack()
+password_label.pack()
+password_entry.pack()
+ok_button.pack(pady=4)
+
+
+ok_button.wait_variable(var) #Wait for ok button to be pressed
+
+username_label.destroy()
+username_entry.destroy()
+password_label.destroy()
+password_entry.destroy()
+ok_button.destroy()
+
 
 space = tkinter.Label(bg=theme[0])
 space2 = tkinter.Label(bg=theme[0])
