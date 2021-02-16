@@ -249,13 +249,15 @@ def send(msg):  #takes in a string from entry field3.
             top.update()
             msg_list.yview(tkinter.END)
 
-        elif msg[1:8] == 'colour ':
-            print("colour")
+        elif msg[1:8] == 'colour ': # English spelling
             user_colour = msg[8:len(msg)]
             msg = ('c', msg[8:len(msg)])
 
-        elif msg[1:8] == 'colours':
-            print("colours")
+        elif msg[1:7] == 'color ': # American spelling
+            user_colour = msg[7:len(msg)]
+            msg = ('c', msg[7:len(msg)])
+
+        elif msg[1:8] == 'colours' or msg[1:7] == 'colors':
             for colour in user_colours:
                 msg_list.insert(tkinter.END, "•" + colour + '\n')
                 msg_list.yview(tkinter.END)
