@@ -11,6 +11,7 @@ import random
 import textwrap
 import webbrowser #For /discord command
 import hashlib
+import difflib
 
 running = True
 
@@ -68,6 +69,8 @@ time.sleep(0.4)
 
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
 leave_messages = ["just left...", "exited", "left the chat.", "ran off"]
+
+commands = ['help', 'mute', 'unmute', 'dm', 'ban', 'unban', 'themes', 'theme', 'colours', 'colour', 'inbox', 'discord']
 
 server_bound = False
 
@@ -183,6 +186,7 @@ def send(msg):  #takes in a string from entry field3.
         is_command = True
         if not muted:
             playsound('resources/client/command.mp3')
+
     else:
         is_command = False
         if not muted:
@@ -192,153 +196,166 @@ def send(msg):  #takes in a string from entry field3.
 
     entry_field.delete(0, 'end')
 
+    if is_command: # Don't send if message is command
 
-    if msg[1:7] == 'theme ':
-        try:
-            theme = themes[msg[7:len(msg)]]
-            theme_name = msg[7:len(msg)]
-            
-            #Update UI
-            top.configure(bg=theme[0])
-            msg_list.config(bg=theme[1])
-            user_list.config(bg=theme[1])
-            space3.config(bg=theme[0])
-            entry_field.config(bg=theme[0], highlightthickness=1)
-            msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
-            send_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
-            emoji_opt.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
-            emoji_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
-            msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)] + '\n')
+        if msg[1:7] == 'theme ':
+            try:
+                theme = themes[msg[7:len(msg)]]
+                theme_name = msg[7:len(msg)]
+                
+                #Update UI
+                top.configure(bg=theme[0])
+                msg_list.config(bg=theme[1])
+                user_list.config(bg=theme[1])
+                space3.config(bg=theme[0])
+                entry_field.config(bg=theme[0], highlightthickness=1)
+                msg_list.config(bg=theme[1], font=font, selectbackground=theme[0], highlightcolor=theme[0])
+                send_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+                emoji_opt.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+                emoji_button.config(bg=theme[1], highlightthickness=0, activebackground=theme[1])
+                msg_list.insert(tkinter.END, "[SYSTEM] Theme has been set to " + msg[7:len(msg)] + '\n')
 
-            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
 
-            print(current_line + ".0", current_line + "." + "8")
+                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_config("hilight_system", foreground="blue")
+                top.update()
 
-            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
-            msg_list.tag_config("hilight_system", foreground="blue")
-            top.update()
+                msg_list.yview(tkinter.END)
 
-            msg_list.yview(tkinter.END)
+            except KeyError:
+                msg_list.insert(tkinter.END, "[SYSTEM] " +  msg[7:len(msg)] + " is not a valid theme." + '\n')
 
-        except KeyError:
-            msg_list.insert(tkinter.END, "[SYSTEM] " +  msg[7:len(msg)] + " is not a valid theme." + '\n')
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_config("hilight_system", foreground="blue")
+                top.update()
 
-            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
-            msg_list.tag_config("hilight_system", foreground="blue")
-            top.update()
-
-            msg_list.yview(tkinter.END)
-        return 0
-
-    elif msg[1:7] == 'themes':
-        for theme in themes.keys():
-            msg_list.insert(tkinter.END, "•" + theme + '\n')
-            msg_list.yview(tkinter.END)
-
-    elif msg[1:5] == 'mute':
-        muted = True
-        msg_list.insert(tkinter.END, "[SYSTEM] Muted notifications" + '\n')
-
-        current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-        msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
-        msg_list.tag_config("hilight_system", foreground="blue")
-        top.update()
-        msg_list.yview(tkinter.END)
-
-    elif msg[1:8] == 'colour ':
-        print("colour")
-        user_colour = msg[8:len(msg)]
-        msg = ('c', msg[8:len(msg)])
-
-    elif msg[1:8] == 'colours':
-        print("colours")
-        for colour in user_colours:
-            msg_list.insert(tkinter.END, "•" + colour + '\n')
-            msg_list.yview(tkinter.END)
-
-    elif msg[1:7] == 'unmute':
-        muted = False
-        msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications" + '\n')
-
-        current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-        msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
-        msg_list.tag_config("hilight_system", foreground="blue")
-        top.update()
-
-        msg_list.yview(tkinter.END)
-
-    elif msg[1:8] == 'sendobj':
-        obj = msg[9:len(msg)]
-        msg = eval(obj)
-
-    elif msg[1:4] == 'ban':
-        member = msg[5:len(msg)]
-        msg = ('b', member)
-    elif msg[1:6] == 'unban':
-        member = msg[7:len(msg)]
-        msg = ('a', member)
-
-
-    elif msg[1:3] == 'dm':
-        whole = msg[4:len(msg)]
-        print(whole)
-        i=0
-        for char in whole:
-            print(char)
-            i+=1
-            if char == " ":
-                print("Blank!!!")
-                from_char = i
-                break
-
-        member = whole[0:from_char-1]
-
-        if member == username:
-            msg_list.insert(tkinter.END, "[SYSTEM] You can't DM yourself!!" + '\n')
-            
-            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
-            msg_list.tag_config("hilight_system", foreground="blue")
-            top.update()
-
+                msg_list.yview(tkinter.END)
             return 0
-        else:
-            message = whole[from_char:len(whole)]
 
-            msg_list.insert(tkinter.END, "[DM] You --> " + member + ": " + message + '\n')
-            
+        elif msg[1:7] == 'themes':
+            for theme in themes.keys():
+                msg_list.insert(tkinter.END, "•" + theme + '\n')
+                msg_list.yview(tkinter.END)
+
+        elif msg[1:5] == 'mute':
+            muted = True
+            msg_list.insert(tkinter.END, "[SYSTEM] Muted notifications" + '\n')
+
             current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-            msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(3 + 5)) #Hilight the username
-            msg_list.tag_config("hilight-" + username, foreground=user_colour)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+            msg_list.yview(tkinter.END)
+
+        elif msg[1:8] == 'colour ':
+            print("colour")
+            user_colour = msg[8:len(msg)]
+            msg = ('c', msg[8:len(msg)])
+
+        elif msg[1:8] == 'colours':
+            print("colours")
+            for colour in user_colours:
+                msg_list.insert(tkinter.END, "•" + colour + '\n')
+                msg_list.yview(tkinter.END)
+
+        elif msg[1:7] == 'unmute':
+            muted = False
+            msg_list.insert(tkinter.END, "[SYSTEM] Unuted notifications" + '\n')
+
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
             top.update()
 
             msg_list.yview(tkinter.END)
-            msg = ('d', member, message)
 
-    elif msg[1:6] == 'inbox':
-        msg = ('i')
+        elif msg[1:8] == 'sendobj':
+            obj = msg[9:len(msg)]
+            msg = eval(obj)
 
-    elif msg[1:8] == 'discord':
-        webbrowser.open("https://discord.gg/nmza5KPfQb")
+        elif msg[1:4] == 'ban':
+            member = msg[5:len(msg)]
+            msg = ('b', member)
+        elif msg[1:6] == 'unban':
+            member = msg[7:len(msg)]
+            msg = ('a', member)
 
-    elif msg[1:5] == 'help':
-        msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
-        msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user" + '\n')
-        msg_list.insert(tkinter.END, "• /inbox - View your inbox" + '\n')
-        msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme" + '\n')
-        msg_list.insert(tkinter.END, "• /themes  - List theme names" + '\n')
-        msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds" + '\n')
-        msg_list.insert(tkinter.END, "• /unmute  - Unute notification sounds" + '\n')
-        msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server" + '\n')
-        msg_list.insert(tkinter.END, "• /colour [colour name]  - Set your username to a colour" + '\n')
-        msg_list.insert(tkinter.END, "• /colours - List all username colours" + '\n')
-        msg_list.insert(tkinter.END, "• /discord - Join the official discord server!" + '\n')
-        msg_list.yview(tkinter.END)
-        return 0
 
-    else:
-        is_command = False
+        elif msg[1:3] == 'dm':
+            whole = msg[4:len(msg)]
+            print(whole)
+            i=0
+            for char in whole:
+                print(char)
+                i+=1
+                if char == " ":
+                    print("Blank!!!")
+                    from_char = i
+                    break
+
+            member = whole[0:from_char-1]
+
+            if member == username:
+                msg_list.insert(tkinter.END, "[SYSTEM] You can't DM yourself!!" + '\n')
+                
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+                msg_list.tag_config("hilight_system", foreground="blue")
+                top.update()
+
+                return 0
+            else:
+                message = whole[from_char:len(whole)]
+
+                msg_list.insert(tkinter.END, "[DM] You --> " + member + ": " + message + '\n')
+                
+                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                msg_list.tag_add("hilight-" + username, current_line + ".5", current_line + "." + str(3 + 5)) #Hilight the username
+                msg_list.tag_config("hilight-" + username, foreground=user_colour)
+                top.update()
+
+                msg_list.yview(tkinter.END)
+                msg = ('d', member, message)
+
+        elif msg[1:6] == 'inbox':
+            msg = ('i')
+
+        elif msg[1:8] == 'discord':
+            webbrowser.open("https://discord.gg/nmza5KPfQb")
+
+        elif msg[1:5] == 'help':
+            msg_list.insert(tkinter.END, "• /disconnect  - Disconnect from the server" + '\n')
+            msg_list.insert(tkinter.END, "• /dm [username] [message]  - Direct message a user" + '\n')
+            msg_list.insert(tkinter.END, "• /inbox - View your inbox" + '\n')
+            msg_list.insert(tkinter.END, "• /theme [theme name]  - Switch colour theme" + '\n')
+            msg_list.insert(tkinter.END, "• /themes  - List theme names" + '\n')
+            msg_list.insert(tkinter.END, "• /mute  - Mute notification sounds" + '\n')
+            msg_list.insert(tkinter.END, "• /unmute  - Unute notification sounds" + '\n')
+            msg_list.insert(tkinter.END, "• /ban [username]  - Ban someone from the server" + '\n')
+            msg_list.insert(tkinter.END, "• /colour [colour name]  - Set your username to a colour" + '\n')
+            msg_list.insert(tkinter.END, "• /colours - List all username colours" + '\n')
+            msg_list.insert(tkinter.END, "• /discord - Join the official discord server!" + '\n')
+            msg_list.yview(tkinter.END)
+            return 0
+
+        else: # Not valid command
+            matches = difflib.get_close_matches(msg[1:len(msg)], commands)
+
+            if len(matches) > 0:
+                msg_list.insert(tkinter.END, '[SYSTEM] That is not a command. Did you mean "/' + matches[0] + '\"?' + '\n')
+            else:
+                msg_list.insert(tkinter.END, '[SYSTEM] That is not a command. Type /help' + '\n')
+            
+            current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+            msg_list.tag_add("hilight_system", current_line + ".0", current_line + "." + "8") #Hilight [SYSTEM]
+            msg_list.tag_config("hilight_system", foreground="blue")
+            top.update()
+
+            msg_list.yview(tkinter.END)
+
+    if not is_command:
         msg = ('m', msg) #  ( message/command type goes here , args go here )
         print(msg)
     
