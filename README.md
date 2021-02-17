@@ -1,6 +1,6 @@
 # PyChat
 
-Pychat is a python chat application created with socket.
+Pychat is a feature rich chat application created with python socket.
 
 # Features
 
