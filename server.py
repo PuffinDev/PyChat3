@@ -122,6 +122,7 @@ def connsend(conn, msg):
 
 
 def handle_client(conn, addr):
+
     server.settimeout(6)
 
     usernames[addr] = str(threading.activeCount() - 1) #Temp username
@@ -173,6 +174,8 @@ def handle_client(conn, addr):
                     if msg[1] == DISCONNECT_MESSAGE:
                         connected = False
                 except: pass
+
+                print("Prefix: " + prefix)
 
                 if prefix == 'u':
                     username = msg[1].replace(' ', '')
@@ -353,4 +356,6 @@ def start():
 
 
 print("[STARTING] server is starting...")
-start()
+try:
+    start()
+except KeyboardInterrupt: exit()

@@ -466,6 +466,7 @@ def recive():
     global refresh_button
 
     timeout = False
+    history_recived = False
 
     while running:
 
@@ -568,61 +569,64 @@ def recive():
                     user_list.insert(tkinter.END, user)
             
             if prefix == 'h':  #Message history
-                history_object = recived_msg[1]
-                line_text = ""
-                line_count = 0
+                if not history_recived:
+                    history_object = recived_msg[1]
+                    line_text = ""
+                    line_count = 0
 
-                for message in history_object:
-                    
-
-                    if message[0] == 'm':
-                        print(message)
-                        if not message[1] == 'disconnect':
-                            
-                            message = list(message) #Make editable
-
-                            wrapper = textwrap.TextWrapper(width=52)
-
-                            formated_msg = wrapper.wrap(text=message[1])
-
-                            i=0
-
-                            for line in formated_msg:
-                                if i == 0: #Only show name on first line
+                    for message in history_object:
                         
-                                    line_text += message[2] + ': ' + line + '\n'
-                                    line_count += 1
-                                    top.update()
 
-                                else:
-                                    line_text +=  '|   ' + line + '\n'
-                                    line_count += 1
+                        if message[0] == 'm':
+                            print(message)
+                            if not message[1] == 'disconnect':
+                                
+                                message = list(message) #Make editable
 
-                                i+=1
-                                msg_list.yview(tkinter.END)
+                                wrapper = textwrap.TextWrapper(width=52)
+
+                                formated_msg = wrapper.wrap(text=message[1])
+
+                                i=0
+
+                                for line in formated_msg:
+                                    if i == 0: #Only show name on first line
+                            
+                                        line_text += message[2] + ': ' + line + '\n'
+                                        line_count += 1
+                                        top.update()
+
+                                    else:
+                                        line_text +=  '|   ' + line + '\n'
+                                        line_count += 1
+
+                                    i+=1
+                                    msg_list.yview(tkinter.END)
+                        
+                        if message[0] == 'd':
+                            if message[3] == username:
+                                line_text += "[DM] You --> " + message[1] + ": " + message[2] + '\n'
+                                line_count += 1
+                            elif message[1] == username:
+                                line_text +=  "[DM] " + message[3] + ": " + message[2] + '\n'
+                                line_count += 1
+
+                            top.update()
+
+                            msg_list.yview(tkinter.END)
+
+                    msg_list.insert('1.0', line_text)
+                    msg_list.insert(str(line_count+1) + '.0', '-------------------------------CURRENT--------------------------------\n')
+                    msg_list.insert(str(line_count+2) + '.0', '[SYSTEM] Welcome to PyChat! Type /help to list commands\n')
+
+                    current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
+                    msg_list.tag_add("hilight_system", str(line_count+2) + ".0", str(line_count+2) + "." + "8") #Hilight [SYSTEM]
+                    msg_list.tag_config("hilight_system", foreground="blue")
+                    top.update()
+
+                    msg_list.yview(tkinter.END)
                     
-                    if message[0] == 'd':
-                        if message[3] == username:
-                            line_text += "[DM] You --> " + message[1] + ": " + message[2] + '\n'
-                            line_count += 1
-                        elif message[1] == username:
-                            line_text +=  "[DM] " + message[3] + ": " + message[2] + '\n'
-                            line_count += 1
-
-                        top.update()
-
-                        msg_list.yview(tkinter.END)
-
-                msg_list.insert('1.0', line_text)
-                msg_list.insert(str(line_count+1) + '.0', '-------------------------------CURRENT--------------------------------\n')
-                msg_list.insert(str(line_count+2) + '.0', '[SYSTEM] Welcome to PyChat! Type /help to list commands\n')
-
-                current_line = str(int(msg_list.index('end').split('.')[0]) - 2)
-                msg_list.tag_add("hilight_system", str(line_count+2) + ".0", str(line_count+2) + "." + "8") #Hilight [SYSTEM]
-                msg_list.tag_config("hilight_system", foreground="blue")
-                top.update()
-
-                msg_list.yview(tkinter.END)
+                    history_recived = True
 
             if prefix == 'i':  #Inbox (DM and @mention history)
                 inbox_object = recived_msg[1]
@@ -748,7 +752,7 @@ def clock():
             client.send(send_length)
             client.send(message)
         except BrokenPipeError:
-            tkinter.messagebox.showinfo("Info", "Lost connection.")
+            break
     print("exited clock")
     return 0
 
@@ -863,6 +867,7 @@ def on_start():
             send_length += b' ' * (HEADER - len(send_length))
             client.send(send_length)
             client.send(message)
+            print("Request history")
 
             return 0
 
