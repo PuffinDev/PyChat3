@@ -217,6 +217,7 @@ def send(msg):  #takes in a string from entry field3.
     global muted
     global theme_name
     global theme
+    global running
 
     global inbox_window
     global inbox_list
@@ -447,6 +448,7 @@ def send(msg):  #takes in a string from entry field3.
         tkinter.messagebox.showinfo("Info", "Lost connection with server.")
         top.destroy()
         print("Exited send")
+        running = False
         return 0
 
 #Make inbox UI global
@@ -485,6 +487,9 @@ def recive():
                 recived_msg = pickle.loads(msg)
                 print(recived_msg)
                 timeout = False
+            else:
+                timeout = True
+                connected = False
     
         except EOFError: #If server is not responding
             if running:
@@ -496,6 +501,7 @@ def recive():
                 print("exited recive")
                 return 0
         except socket.timeout:
+            print("Timeout")
             timeout = True
             pass
 
