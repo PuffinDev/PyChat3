@@ -168,18 +168,22 @@ def set_custom_server():
 
 top.title('Server selector')
 v = tkinter.IntVar(); v.set(1)
-custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=101, command=set_custom_server, bg=theme[0], highlightthickness=0)
-default_server = tkinter.Radiobutton(text="Official server ", variable=v, value=102, command=set_official_server, bg=theme[0], highlightthickness=0)
+custom_server = tkinter.Radiobutton(text="Custom server", variable=v, value=2, command=set_custom_server, bg=theme[0], highlightthickness=0)
+default_server = tkinter.Radiobutton(text="Official server ", variable=v, value=1, command=set_official_server, bg=theme[0], highlightthickness=0)
 server_label = tkinter.Label(text="Server adress", bg=theme[0])
 server_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
 port_label = tkinter.Label(text="Port number", bg=theme[0])
 port_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
+
+set_official_server() # Default server is selected by default
 
 def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()), username)
 port_entry.bind('<Return>', connect_to_current_server)
 server_entry.bind('<Return>', connect_to_current_server)
 
 connect_button = tkinter.Button(text="Connect!", bg=theme[1], activebackground=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
+connect_button.bind('<Return>', connect_to_current_server)
+connect_button.focus_set()
 
 custom_server.pack()
 default_server.pack()
