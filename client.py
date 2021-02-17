@@ -13,6 +13,9 @@ import webbrowser #For /discord command
 import hashlib
 import difflib
 
+HEADER = 64
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "disconnect"
 running = True
 
 #Theme presets
@@ -45,6 +48,8 @@ with open("resources/client/config.json", 'r') as file:
     except:
         user_colour = user_colours[random.randint(0, len(user_colours) - 1)]
         colour_set = False
+    try: username = data["username"]
+    except: username = ""
 
 #Save config
 
@@ -53,18 +58,17 @@ def save_config():
     global muted
     global colour_set
     global user_colour
+    global username
+    global plaintext_password
 
     with open("resources/client/config.json", 'w') as file:
 
         data["theme"] = theme_name
         data["muted"] = muted
+        data["username"] = username
+        #data["password"] = str(plaintext_password.encode(FORMAT))
         if colour_set: data["user_colour"] = user_colour
         file = json.dump(data, file)
-
-
-HEADER = 64
-FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "disconnect"
 
 
 join_messages = ["is here!", "just joined!", "arived!", "popped in!"]
@@ -76,7 +80,7 @@ server_bound = False
 
 client = None
 
-def connect(server, port, username):
+def connect(server, port):
     global server_bound
     global client
 
@@ -94,8 +98,8 @@ def connect(server, port, username):
         tkinter.messagebox.showinfo("Error", "Host does not exist or is not online.")
         top.destroy()
         exit()
-    #except:
-        #tkinter.messagebox.showinfo("Error", "An unexpected error occured.")
+    except:
+        tkinter.messagebox.showinfo("Error", "An unexpected error occured.")
     
     time.sleep(1)
     server_bound = True
@@ -113,15 +117,17 @@ font = tkFont.Font(family="Courier New",size=11)
 #username = tkinter.simpledialog.askstring("Username", "Choose a username")
 #password = tkinter.simpledialog.askstring("Password", "Type your password")
 
-username = None
 password = None
+#plaintext_password = None
 
 def login(*key):
     global username
     global password
+    global plaintext_password
 
     username = username_entry.get()
     password = password_entry.get()
+    #plaintext_password = password
     password = hashlib.md5(password.encode(FORMAT)).hexdigest()
 
     var.set(1)
@@ -131,10 +137,15 @@ username_label = tkinter.Label(text="Username", bg=theme[0])
 password_label = tkinter.Label(text="Password", bg=theme[0])
 username_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center')
 username_entry.focus_set()
+username_entry.insert(0, username) #insert saved username
+
+
 password_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justify='center', show='•')
 ok_button = tkinter.Button(text="Ok", command=login, bg=theme[1], activebackground=theme[1])
 username_entry.bind('<Return>', login)
 password_entry.bind('<Return>', login)
+if len(username) > 0:
+    password_entry.focus_set() #Set focus on password field if username has been saved
 
 username_label.pack()
 username_entry.pack()
@@ -177,11 +188,11 @@ port_entry = tkinter.Entry(bg=theme[0], fg='black', highlightthickness=1, justif
 
 set_official_server() # Default server is selected by default
 
-def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()), username)
+def connect_to_current_server(key): connect(server_entry.get(), int(port_entry.get()))
 port_entry.bind('<Return>', connect_to_current_server)
 server_entry.bind('<Return>', connect_to_current_server)
 
-connect_button = tkinter.Button(text="Connect!", bg=theme[1], activebackground=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get()), username))
+connect_button = tkinter.Button(text="Connect!", bg=theme[1], activebackground=theme[1], command=lambda: connect(server_entry.get(), int(port_entry.get())))
 connect_button.bind('<Return>', connect_to_current_server)
 connect_button.focus_set()
 
