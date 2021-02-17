@@ -1,6 +1,6 @@
-# PyChat2
+# PyChat
 
-Pychat2 is a python chat application created with socket.
+Pychat is a python chat application created with socket.
 
 # Features
 
