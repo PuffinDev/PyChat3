@@ -91,15 +91,14 @@ def connect(server, port):
     try:
         client.connect(ADDR)
     except ConnectionRefusedError:
-        tkinter.messagebox.showinfo("Error", "Server is not running.")
-        top.destroy()
-        exit()
+        popupwin("Error", "Server is not running.")
+        return 0
     except socket.gaierror:
-        tkinter.messagebox.showinfo("Error", "Host does not exist or is not online.")
-        top.destroy()
-        exit()
+        popupwin("Error", "Host does not exist or is not online.")
+        return 0
     except:
-        tkinter.messagebox.showinfo("Error", "An unexpected error occured.")
+        popupwin("Error", "An unexpected error occured.")
+        return 0
     
     time.sleep(1)
     server_bound = True
@@ -113,6 +112,22 @@ top.configure(bg=theme[0])
 
 font = tkFont.Font(family="Courier New",size=11)
 
+
+def choosefunc(choice, tl):
+    if choice == 'ok':
+        tl.destroy()
+
+def popupwin(title, message):
+
+    tl = tkinter.Toplevel(top)
+    tl.title(title)
+
+
+    msgbody1 = tkinter.Label(tl, text=message, font=("Times New Roman", 20, "bold"))
+    msgbody1.pack()
+
+    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl), width=10)
+    okbttn.pack()
 
 #username = tkinter.simpledialog.askstring("Username", "Choose a username")
 #password = tkinter.simpledialog.askstring("Password", "Type your password")
@@ -468,7 +483,7 @@ def send(msg):  #takes in a string from entry field3.
     except ConnectionResetError:
         return 0
     except BrokenPipeError:
-        tkinter.messagebox.showinfo("Info", "Lost connection with server.")
+        popupwin("Info", "Lost connection with server.")
         top.destroy()
         print("Exited send")
         running = False
@@ -516,7 +531,7 @@ def recive():
     
         except EOFError: #If server is not responding
             if running:
-                tkinter.messagebox.showinfo("Info","Server closed.")
+                popupwin("Info","Server closed.")
                 running = False
                 top.destroy()
                 exit()
