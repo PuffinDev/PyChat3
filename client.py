@@ -120,6 +120,12 @@ font = tkFont.Font(family="Courier New",size=11)
 password = None
 #plaintext_password = None
 
+
+login_title = tkinter.Label(text="Login or register", bg=theme[1], font=("Helvetica", 11, 'bold'))
+login_space = tkinter.Label(text=" ", bg=theme[0])
+login_title.pack()
+login_space.pack()
+
 def login(*key):
     global username
     global password
@@ -156,6 +162,8 @@ ok_button.pack(pady=4)
 
 ok_button.wait_variable(var) #Wait for ok button to be pressed
 
+login_title.destroy()
+login_space.destroy()
 username_label.destroy()
 username_entry.destroy()
 password_label.destroy()
