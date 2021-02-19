@@ -126,14 +126,14 @@ def choosefunc(choice, tl, fatal):
 
 def popupwin(title, message, fatal):
 
-    tl = tkinter.Toplevel(top)
+    tl = tkinter.Toplevel(top, bg=theme[0])
     tl.title(title)
 
 
-    msgbody1 = tkinter.Label(tl, text=message, font=("Times New Roman", 20, "bold"))
+    msgbody1 = tkinter.Label(tl, text=message, font=("Courier New", 15, "bold"), bg=theme[0], activebackground=theme[0])
     msgbody1.pack()
 
-    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl, fatal), width=10)
+    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl, fatal), width=10, bg=theme[1])
     okbttn.pack()
 
 #username = tkinter.simpledialog.askstring("Username", "Choose a username")
