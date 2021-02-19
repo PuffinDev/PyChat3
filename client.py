@@ -91,13 +91,13 @@ def connect(server, port):
     try:
         client.connect(ADDR)
     except ConnectionRefusedError:
-        popupwin("Error", "Server is not running.")
+        popupwin("Error", "Server is not running.", False)
         return 0
     except socket.gaierror:
-        popupwin("Error", "Host does not exist or is not online.")
+        popupwin("Error", "Host does not exist or is not online.", False)
         return 0
     except:
-        popupwin("Error", "An unexpected error occured.")
+        popupwin("Error", "An unexpected error occured.", False)
         return 0
     
     time.sleep(1)
@@ -113,11 +113,18 @@ top.configure(bg=theme[0])
 font = tkFont.Font(family="Courier New",size=11)
 
 
-def choosefunc(choice, tl):
+def choosefunc(choice, tl, fatal):
+    global running
+
     if choice == 'ok':
         tl.destroy()
+        if fatal:
+            print("Exiting...")
+            top.destroy()
+            running = False
+            exit()
 
-def popupwin(title, message):
+def popupwin(title, message, fatal):
 
     tl = tkinter.Toplevel(top)
     tl.title(title)
@@ -126,7 +133,7 @@ def popupwin(title, message):
     msgbody1 = tkinter.Label(tl, text=message, font=("Times New Roman", 20, "bold"))
     msgbody1.pack()
 
-    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl), width=10)
+    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl, fatal), width=10)
     okbttn.pack()
 
 #username = tkinter.simpledialog.askstring("Username", "Choose a username")
@@ -483,10 +490,8 @@ def send(msg):  #takes in a string from entry field3.
     except ConnectionResetError:
         return 0
     except BrokenPipeError:
-        popupwin("Info", "Lost connection with server.")
-        top.destroy()
+        popupwin("Info", "Lost connection with server.", True)
         print("Exited send")
-        running = False
         return 0
 
 #Make inbox UI global
@@ -531,10 +536,7 @@ def recive():
     
         except EOFError: #If server is not responding
             if running:
-                popupwin("Info","Server closed.")
-                running = False
-                top.destroy()
-                exit()
+                popupwin("Info","Server closed.", True)
             else:
                 print("exited recive")
                 return 0
