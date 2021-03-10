@@ -133,7 +133,7 @@ def popupwin(title, message, fatal):
     msgbody1 = tkinter.Label(tl, text=message, font=("Courier New", 15, "bold"), bg=theme[0], activebackground=theme[0])
     msgbody1.pack()
 
-    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl, fatal), width=10, bg=theme[1])
+    okbttn = tkinter.Button(tl, text="OK", command=lambda: choosefunc("ok", tl, fatal), width=10, bg=theme[1], activebackground=theme[1])
     okbttn.pack()
 
 #username = tkinter.simpledialog.askstring("Username", "Choose a username")
